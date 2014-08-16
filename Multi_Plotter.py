@@ -11,10 +11,17 @@ Copyright: Aldebaran Robotics 2014
 """
 
 try:
-    from pyqtgraph.Qt import QtGui, QtCore
     import pyqtgraph as pg
-except:
-    print "Well that's embarrassing!\nI can't find pyqtgraph on your computer.\nPlease install pyqtgraph."
+except ImportError:
+    print "Well that's embarrassing !"
+    print "I can't find pyqtgraph on your computer. Please install pyqtgraph."
+    print 'You can visit the section "Installation" of www.pyqtgraph.org.'
+    print 'If pip is already installed on your computer, you can just type'
+    print '"pip install pyqtgraph" in a command line interface.'
+
+    exit()
+
+from pyqtgraph.Qt import QtGui, QtCore
 
 import Read_cfg as rd
 
