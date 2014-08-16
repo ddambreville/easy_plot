@@ -34,14 +34,14 @@ def main():
 
     # Creation of the window from multi_plotter2.cfg configuration file,
     # and resolution defined before.
-    my_window = mp.window("multi_plotter.cfg", res_X, res_Y)
+    my_window = mp.Window("multi_plotter.cfg", res_X, res_Y)
 
     # Creation of exemple data list, to put on figures
     # structure of a list is following:
-    #[                                 Window Datas                                  ]
-    #[[        Datas Figure 1            ],...,[        Datas Figure n              ]]
-    #[[[Datas Curve 1],...,[Datas Curve n]],...,[[Datas Curve 1],...,[Datas Curve n]]]
-    # -------------------------------------------------------------------------#
+    #[                                 Window                ]
+    #[[        Figure 1       ],...,[         Figure n      ]]
+    #[[[Curve 1],...,[Curve n]],...,[[Curve 1],...,[Curve n]]]
+
     bigX = np.linspace(0, 2 * np.pi, 1000)
 
     for i in range(my_window.nb_figure):

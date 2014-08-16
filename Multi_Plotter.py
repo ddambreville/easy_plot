@@ -36,19 +36,17 @@ class button(object):
     """
 
     def __init__(self, layout, row, column):
-        self.btn1 = QtGui.QPushButton('Autoscale: OFF')
+        self.btn1 = QtGui.QPushButton('auto_scale: OFF')
         self.btn2 = QtGui.QPushButton('Auto Range: ON')
 
         self.btn1.setStyleSheet(
             "background-color:#000000; border: 2px solid #898989")
-        # self.btn1.setFixedSize(100,100)
 
         self.btn2.setStyleSheet(
             "background-color:#000000; border: 2px solid #898989")
-        # self.btn2.setFixedSize(100,100)
 
-        self.autoScale = 0
-        self.autoRange = 0
+        self.auto_scale = 0
+        self.auto_range = 0
 
         self.timer_btn1 = QtCore.QTimer()
         self.timer_btn2 = QtCore.QTimer()
@@ -57,38 +55,42 @@ class button(object):
         layout.addWidget(self.btn2, row, column + 2)
 
     def _auto_scale_on(self):
-        self.btn1.setText("Autoscale: ON")
+        """Private method : Enable Auto Scale"""
+        self.btn1.setText("Auto Scale: ON")
         self.btn2.setText("Auto Range: OFF")
-        self.autoScale = 1
-        self.autoRange = 0
+        self.auto_scale = 1
+        self.auto_range = 0
 
     def _auto_scale_off(self):
-        self.btn1.setText("Autoscale: OFF")
-        self.autoScale = 0
+        """Private method : Disable Auto Scale"""
+        self.btn1.setText("Auto Scale: OFF")
+        self.auto_scale = 0
 
     def _auto_range_on(self):
-        self.btn1.setText("Autoscale: OFF")
+        """Pritave method : Enable Auto Range"""
+        self.btn1.setText("Auto Scale: OFF")
         self.btn2.setText("Auto Range: ON")
-        self.autoRange = 1
-        self.autoScale = 0
+        self.auto_range = 1
+        self.auto_scale = 0
 
     def _auto_range_off(self):
+        """Private method : Disable Auto Range"""
         self.btn2.setText("Auto Range: OFF")
-        self.autoRange = 0
+        self.auto_range = 0
 
     def _update(self):
-        if self.autoScale == 0:
+        if self.auto_scale == 0:
             self.btn1.clicked.connect(self._auto_scale_on)
         else:
             self.btn1.clicked.connect(self._auto_scale_off)
 
-        if self.autoRange == 0:
+        if self.auto_range == 0:
             self.btn2.clicked.connect(self._auto_range_on)
         else:
             self.btn2.clicked.connect(self._auto_range_off)
 
 
-class curve(object):
+class Curve(object):
 
     """
     curve class
@@ -100,27 +102,28 @@ class curve(object):
         self.legend = curve_parameters_data.legend
         self.color = curve_parameters_data.color
 
-        self.dataCloudX = [0]
-        self.dataCloudY = [0]
+        self.data_cloud_x = [0]
+        self.data_cloud_y = [0]
         self.curve_plot = False
 
-    def update_point(self, dataCloudX, dataCloudY):
-        self.dataCloudX = dataCloudX
-        self.dataCloudY = dataCloudY
+    def update_point(self, data_cloud_x, data_cloud_y):
+        self.data_cloud_x = data_cloud_x
+        self.data_cloud_y = data_cloud_y
 
     def show_curve(self, graph):
         if self.curve_plot == False:
             self.curve_plot = graph.plot(
-                self.dataCloudX, self.dataCloudY, pen=self.color, name=self.legend)
+                self.data_cloud_x, self.data_cloud_y, pen=self.color,
+                name=self.legend)
         else:
             self.curve_plot = graph.plot(
-                self.dataCloudX, self.dataCloudY, pen=self.color)
+                self.data_cloud_x, self.data_cloud_y, pen=self.color)
 
 
-class figure(object):
+class Figure(object):
 
     """
-    figure class
+    Figure class
     This class permits the gestion of figures in window
     """
 
@@ -131,22 +134,22 @@ class figure(object):
         self.max_time = max_time
 
         self.title = figure_parameters.title
-        self.lablX = figure_parameters.labelX
-        self.unitX = figure_parameters.unitX
-        self.lablY = figure_parameters.labelY
-        self.unitY = figure_parameters.unitY
-        self.minY = figure_parameters.minY
-        self.maxY = figure_parameters.maxY
-        self.gridX = figure_parameters.gridX
-        self.gridY = figure_parameters.gridY
+        self.label_x = figure_parameters.labelX
+        self.unit_x = figure_parameters.unitX
+        self.label_y = figure_parameters.labelY
+        self.unit_y = figure_parameters.unitY
+        self.min_y = figure_parameters.minY
+        self.max_y = figure_parameters.maxY
+        self.grid_x = figure_parameters.gridX
+        self.grid_y = figure_parameters.gridY
 
         self.curves_list = curves_list
 
         self.graph = pg.PlotWidget(title=self.title)
-        self.graph.setYRange(self.minY, self.maxY)
-        self.graph.setLabel('bottom', self.lablX, units=self.unitX)
-        self.graph.setLabel('left', self.lablY, units=self.unitY)
-        self.graph.showGrid(x=self.gridX, y=self.gridY)
+        self.graph.setYRange(self.min_y, self.max_y)
+        self.graph.setLabel('bottom', self.label_x, units=self.unit_x)
+        self.graph.setLabel('left', self.label_y, units=self.unit_y)
+        self.graph.showGrid(x=self.grid_x, y=self.grid_y)
 
         if len(self.curves_list) > 0:
             self.graph.addLegend()
@@ -160,15 +163,17 @@ class figure(object):
         #self.button = button(layout, new_row, new_col)
 
     def _action_button(self):
-        if self.button.autoScale == 1:
+        if self.button.auto_scale == 1:
             self.graph.enableAutoRange()
         else:
             self.graph.disableAutoRange()
 
-        if self.button.autoRange == 1:
+        if self.button.auto_range == 1:
             if len(self.curves_list) != 0:
-                self.graph.setXRange(self.curves_list[0].dataCloudX[0] - int(
-                    self.max_time / 2), self.curves_list[0].dataCloudX[0] + int(self.max_time / 2))
+                self.graph.setXRange(self.curves_list[0].data_cloud_x[0] -
+                                     int(self.max_time / 2),
+                                     self.curves_list[0].data_cloud_x[0] +
+                                     int(self.max_time / 2))
             else:
                 self.graph.setXRange(0, self.max_time)
         else:
@@ -183,7 +188,7 @@ class figure(object):
         self.graph.clear()
 
 
-class window(object):
+class Window(object):
 
     """
     window class
@@ -219,38 +224,34 @@ class window(object):
             for j in range(parameters.curves_parameters.number_of_curves):
                 if (int(parameters.figures_parameters[i].row) == int(parameters.curves_parameters.curve_data[j].row)) and (int(parameters.figures_parameters[i].column) == int(parameters.curves_parameters.curve_data[j].column)):
                     curves_list.append(
-                        curve(parameters.curves_parameters.curve_data[j]))
+                        Curve(parameters.curves_parameters.curve_data[j]))
 
-            self.figure_list.append(
-                figure(self.layout, self.max_time, parameters.figures_parameters[i], curves_list))
+            self.figure_list.append(Figure(self.layout, self.max_time,
+                                           parameters.figures_parameters[i],
+                                           curves_list))
 
         self.window.setLayout(self.layout)
 
-        # for i in range(self.nb_figure):
-        #     self.figure_list[i].button.timer_btn1.timeout.connect(self.figure_list[i].button._update)
-        #     self.figure_list[i].button.timer_btn1.start(10)
-
-        #     self.figure_list[i].button.timer_btn2.timeout.connect(self.figure_list[i]._action_button)
-        #     self.figure_list[i].button.timer_btn2.start(10)
-
         self.window.show()
 
-    def update_one_figure(self, dataListX, dataListY, row, column):
+    def update_one_figure(self, data_list_X, dataListY, row, column):
         """
-        Update the figure situated on the window at (row;column) coordonate only,
-        with dataListX and dataListY datas.
+        Update the figure situated on the window at (row;column) coordonate
+        only, with data_list_X and dataListY datas.
         """
 
         flag = False
 
         for i in range(self.nb_figure):
-            if self.figure_list[i].position_row == row and self.figure_list[i].position_column == column:
+            if self.figure_list[i].position_row == row and \
+                self.figure_list[i].position_column == column:
                 self.figure_list[i].clear_figure()
-                self.figure_list[i].update_figure(dataListX, dataListY)
+                self.figure_list[i].update_figure(data_list_X, dataListY)
                 flag = True
 
-        if flag is False:
-            print "ERROR: Can't Update figure at " + str(row) + "-" + str(column) + " -> Not Found"
+        if not flag:
+            print "ERROR: Can't Update figure at " + str(row) + "-" + \
+                str(column) + " -> Not Found"
 
     def update_all_window(self, dataListListX, dataListListY):
         """
