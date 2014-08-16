@@ -34,7 +34,7 @@ def main():
 
     # Creation of the window from multi_plotter2.cfg configuration file,
     # and resolution defined before.
-    my_window = mp.Window("multi_plotter.cfg", res_X, res_Y)
+    my_window = mp.Window("easy_plot.cfg", res_X, res_Y)
 
     # Creation of exemple data list, to put on figures
     # structure of a list is following:
