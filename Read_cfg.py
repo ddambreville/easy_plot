@@ -14,6 +14,7 @@ import tools
 
 #========================Class Definitions=====================================
 
+
 class generalParameter(object):
 
     """
@@ -26,7 +27,8 @@ class generalParameter(object):
         if "General" in dic:
             try:
                 self.number_of_rows = int(dic["General"]["NumberOfRows"][0])
-                self.number_of_columns = int(dic["General"]["NumberOfColumns"][0])
+                self.number_of_columns = int(
+                    dic["General"]["NumberOfColumns"][0])
             except:
                 print "Error: There is no informations for rows and columns number"
                 self.number_of_rows = 1
@@ -46,7 +48,7 @@ class generalParameter(object):
                 self.anti_aliasing = bool(dic["General"]["Anti-aliasing"][0])
             else:
                 self.anti_aliasing = False
-        else :
+        else:
             print "WARNING: Their is no general informations -> Set parameters to Default"
             self.number_of_rows = 1
             self.number_of_columns = 1
@@ -79,37 +81,44 @@ class figureParameter(object):
                 self.maxY = 10
 
             if "GridX" in dic[str(row) + "-" + str(column)]:
-                self.gridX = bool(dic[str(row) + "-" + str(column)]["GridX"][0])
+                self.gridX = bool(
+                    dic[str(row) + "-" + str(column)]["GridX"][0])
             else:
                 self.gridX = False
 
             if "GridY" in dic[str(row) + "-" + str(column)]:
-                self.gridY = bool(dic[str(row) + "-" + str(column)]["GridY"][0])
+                self.gridY = bool(
+                    dic[str(row) + "-" + str(column)]["GridY"][0])
             else:
                 self.gridY = False
 
             if "Title" in dic[str(row) + "-" + str(column)]:
-                self.title = str(' '.join(dic[str(row) + "-" + str(column)]["Title"]))
+                self.title = str(
+                    ' '.join(dic[str(row) + "-" + str(column)]["Title"]))
             else:
                 self.title = ''
 
             if "LabelX" in dic[str(row) + "-" + str(column)]:
-                self.labelX = str(' '.join(dic[str(row) + "-" + str(column)]["LabelX"]))
+                self.labelX = str(
+                    ' '.join(dic[str(row) + "-" + str(column)]["LabelX"]))
             else:
                 self.labelX = ''
 
             if "UnitX" in dic[str(row) + "-" + str(column)]:
-                self.unitX = str(' '.join(dic[str(row) + "-" + str(column)]["UnitX"]))
+                self.unitX = str(
+                    ' '.join(dic[str(row) + "-" + str(column)]["UnitX"]))
             else:
                 self.unitX = ''
 
             if "LabelY" in dic[str(row) + "-" + str(column)]:
-                self.labelY = str(' '.join(dic[str(row) + "-" + str(column)]["LabelY"]))
+                self.labelY = str(
+                    ' '.join(dic[str(row) + "-" + str(column)]["LabelY"]))
             else:
                 self.labelY = ''
 
             if "UnitY" in dic[str(row) + "-" + str(column)]:
-                self.unitY = str(' '.join(dic[str(row) + "-" + str(column)]["UnitY"]))
+                self.unitY = str(
+                    ' '.join(dic[str(row) + "-" + str(column)]["UnitY"]))
             else:
                 self.unitY = ''
         else:
@@ -124,6 +133,7 @@ class figureParameter(object):
             self.labelY = ''
             self.unitY = ''
 
+
 class curveParametersData(object):
 
     def __init__(self, name, row, column, legend, color):
@@ -134,6 +144,7 @@ class curveParametersData(object):
         self.legend = legend
         self.color = color
 
+
 class curveParameters(object):
 
     def __init__(self, dic):
@@ -142,9 +153,10 @@ class curveParameters(object):
 
         for key in dic["Plot"].keys():
             if len(dic["Plot"][key]) >= 4:
-                self.curve_data.append(curveParametersData(key,dic["Plot"][key][0], dic["Plot"][key][1], dic["Plot"][key][2], dic["Plot"][key][3]))
+                self.curve_data.append(curveParametersData(key, dic["Plot"][key][
+                                       0], dic["Plot"][key][1], dic["Plot"][key][2], dic["Plot"][key][3]))
             else:
-                print "WARNING: Argument missing for key "+str(key)
+                print "WARNING: Argument missing for key " + str(key)
 
         self.number_of_curves = len(self.curve_data)
 
@@ -159,7 +171,7 @@ class allParameters(object):
     This class permits to regroup general_parameter and figure_parameter
     """
 
-    def __init__(self,general_parameters, figures_parameters, curves_parameters):
+    def __init__(self, general_parameters, figures_parameters, curves_parameters):
         self.general_parameters = general_parameters
         self.figures_parameters = figures_parameters
         self.curves_parameters = curves_parameters
@@ -169,7 +181,6 @@ class allParameters(object):
 
 
 def defineParameters(config_file):
-
     """
     Use readConfigFile from tools to put all datas from config file in an
     allParameters class
@@ -182,6 +193,6 @@ def defineParameters(config_file):
 
     for i in range(general_parameters.number_of_rows):
         for j in range(general_parameters.number_of_columns):
-            figures_parameters.append(figureParameter(conf, i+1, j+1))
+            figures_parameters.append(figureParameter(conf, i + 1, j + 1))
 
     return allParameters(general_parameters, figures_parameters, curve_parameters)

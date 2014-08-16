@@ -20,6 +20,7 @@ import Read_cfg as rd
 
 #========================Class Definitions=====================================
 
+
 class button(object):
 
     """
@@ -31,11 +32,13 @@ class button(object):
         self.btn1 = QtGui.QPushButton('Autoscale: OFF')
         self.btn2 = QtGui.QPushButton('Auto Range: ON')
 
-        self.btn1.setStyleSheet("background-color:#000000; border: 2px solid #898989")
-        #self.btn1.setFixedSize(100,100)
+        self.btn1.setStyleSheet(
+            "background-color:#000000; border: 2px solid #898989")
+        # self.btn1.setFixedSize(100,100)
 
-        self.btn2.setStyleSheet("background-color:#000000; border: 2px solid #898989")
-        #self.btn2.setFixedSize(100,100)
+        self.btn2.setStyleSheet(
+            "background-color:#000000; border: 2px solid #898989")
+        # self.btn2.setFixedSize(100,100)
 
         self.autoScale = 0
         self.autoRange = 0
@@ -44,7 +47,7 @@ class button(object):
         self.timer_btn2 = QtCore.QTimer()
 
         layout.addWidget(self.btn1, row, column)
-        layout.addWidget(self.btn2, row, column+2)
+        layout.addWidget(self.btn2, row, column + 2)
 
     def _auto_scale_on(self):
         self.btn1.setText("Autoscale: ON")
@@ -100,9 +103,11 @@ class curve(object):
 
     def show_curve(self, graph):
         if self.curve_plot == False:
-            self.curve_plot = graph.plot(self.dataCloudX, self.dataCloudY, pen = self.color, name = self.legend)
+            self.curve_plot = graph.plot(
+                self.dataCloudX, self.dataCloudY, pen=self.color, name=self.legend)
         else:
-            self.curve_plot = graph.plot(self.dataCloudX, self.dataCloudY, pen = self.color)
+            self.curve_plot = graph.plot(
+                self.dataCloudX, self.dataCloudY, pen=self.color)
 
 
 class figure(object):
@@ -130,16 +135,16 @@ class figure(object):
 
         self.curves_list = curves_list
 
-        self.graph = pg.PlotWidget(title = self.title)
-        self.graph.setYRange(self.minY,self.maxY)
+        self.graph = pg.PlotWidget(title=self.title)
+        self.graph.setYRange(self.minY, self.maxY)
         self.graph.setLabel('bottom', self.lablX, units=self.unitX)
         self.graph.setLabel('left', self.lablY, units=self.unitY)
-        self.graph.showGrid(x = self.gridX, y = self.gridY)
+        self.graph.showGrid(x=self.gridX, y=self.gridY)
 
         if len(self.curves_list) > 0:
             self.graph.addLegend()
 
-        #self.graph.hideButtons()
+        # self.graph.hideButtons()
 
         new_row = self.position_row * 2
         new_col = self.position_column * 3
@@ -155,9 +160,10 @@ class figure(object):
 
         if self.button.autoRange == 1:
             if len(self.curves_list) != 0:
-                self.graph.setXRange(self.curves_list[0].dataCloudX[0] - int(self.max_time/2), self.curves_list[0].dataCloudX[0] + int(self.max_time/2))
+                self.graph.setXRange(self.curves_list[0].dataCloudX[0] - int(
+                    self.max_time / 2), self.curves_list[0].dataCloudX[0] + int(self.max_time / 2))
             else:
-                self.graph.setXRange(0,self.max_time)
+                self.graph.setXRange(0, self.max_time)
         else:
             pass
 
@@ -168,7 +174,6 @@ class figure(object):
 
     def clear_figure(self):
         self.graph.clear()
-
 
 
 class window(object):
@@ -193,12 +198,12 @@ class window(object):
 
         self.window = QtGui.QWidget()
         self.window.setStyleSheet("QWidget {background-color: #111111 }")
-        self.window.resize(resX,resY)
+        self.window.resize(resX, resY)
         self.window.setWindowTitle(self.title)
         self.layout = QtGui.QGridLayout()
         self.figure_list = []
 
-        pg.setConfigOptions(antialias = self.anti_aliasing)
+        pg.setConfigOptions(antialias=self.anti_aliasing)
 
         for i in range(self.nb_figure):
 
@@ -206,9 +211,11 @@ class window(object):
 
             for j in range(parameters.curves_parameters.number_of_curves):
                 if (int(parameters.figures_parameters[i].row) == int(parameters.curves_parameters.curve_data[j].row)) and (int(parameters.figures_parameters[i].column) == int(parameters.curves_parameters.curve_data[j].column)):
-                    curves_list.append(curve(parameters.curves_parameters.curve_data[j]))
+                    curves_list.append(
+                        curve(parameters.curves_parameters.curve_data[j]))
 
-            self.figure_list.append(figure(self.layout,self.max_time,parameters.figures_parameters[i],curves_list))
+            self.figure_list.append(
+                figure(self.layout, self.max_time, parameters.figures_parameters[i], curves_list))
 
         self.window.setLayout(self.layout)
 
@@ -222,7 +229,6 @@ class window(object):
         self.window.show()
 
     def update_one_figure(self, dataListX, dataListY, row, column):
-
         """
         Update the figure situated on the window at (row;column) coordonate only,
         with dataListX and dataListY datas.
@@ -231,16 +237,15 @@ class window(object):
         flag = False
 
         for i in range(self.nb_figure):
-            if self.figure_list[i].position_row == row and self.figure_list[i].position_column == column :
+            if self.figure_list[i].position_row == row and self.figure_list[i].position_column == column:
                 self.figure_list[i].clear_figure()
-                self.figure_list[i].update_figure(dataListX,dataListY)
+                self.figure_list[i].update_figure(dataListX, dataListY)
                 flag = True
 
         if flag is False:
-            print "ERROR: Can't Update figure at "+str(row)+"-"+str(column)+" -> Not Found"
+            print "ERROR: Can't Update figure at " + str(row) + "-" + str(column) + " -> Not Found"
 
     def update_all_window(self, dataListListX, dataListListY):
-
         """
         Update all figures situated on the window, with dataListListX and
         dataListListY datas.
@@ -248,9 +253,8 @@ class window(object):
 
         for i in range(self.nb_figure):
             self.figure_list[i].clear_figure()
-            self.figure_list[i].update_figure(dataListListX[i],dataListListY[i])
+            self.figure_list[i].update_figure(
+                dataListListX[i], dataListListY[i])
 
     def run(self):
-        self.app.exec_() #Execution of the application
-
-
+        self.app.exec_()  # Execution of the application
