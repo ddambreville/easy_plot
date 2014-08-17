@@ -97,10 +97,9 @@ class Curve(object):
     This class permits the gestion of curves in figures
     """
 
-    def __init__(self, curve_parameters_data):
-        self.name = curve_parameters_data.name
-        self.legend = curve_parameters_data.legend
-        self.color = curve_parameters_data.color
+    def __init__(self, legend, color):
+        self.legend = legend
+        self.color = color
 
         self.data_cloud_x = [0]
         self.data_cloud_y = [0]
@@ -127,23 +126,24 @@ class Figure(object):
     This class permits the gestion of figures in window
     """
 
-    def __init__(self, layout, max_time, figure_parameters, curves_list):
-        self.position_row = figure_parameters.row
-        self.position_column = figure_parameters.column
+    def __init__(self, layout, row, column, max_time, title, label_x, unit_x,
+                 label_y, unit_y, min_y, max_y, grid_x, grid_y):
+
+        self.row = row
+        self.column = column
 
         self.max_time = max_time
+        self.title = title
+        self.label_x = label_x
+        self.unit_x = unit_x
+        self.label_y = label_y
+        self.unit_y = unit_y
+        self.min_y = min_y
+        self.max_y = max_y
+        self.grid_x = grid_x
+        self.grid_y = grid_y
 
-        self.title = figure_parameters.title
-        self.label_x = figure_parameters.labelX
-        self.unit_x = figure_parameters.unitX
-        self.label_y = figure_parameters.labelY
-        self.unit_y = figure_parameters.unitY
-        self.min_y = figure_parameters.minY
-        self.max_y = figure_parameters.maxY
-        self.grid_x = figure_parameters.gridX
-        self.grid_y = figure_parameters.gridY
-
-        self.curves_list = curves_list
+        self.curves = {}
 
         self.graph = pg.PlotWidget(title=self.title)
         self.graph.setYRange(self.min_y, self.max_y)
@@ -151,13 +151,14 @@ class Figure(object):
         self.graph.setLabel('left', self.label_y, units=self.unit_y)
         self.graph.showGrid(x=self.grid_x, y=self.grid_y)
 
-        if len(self.curves_list) > 0:
+        # If there is at least one curve in the figure
+        if self.curves != {}:
             self.graph.addLegend()
 
         # self.graph.hideButtons()
 
-        new_row = self.position_row * 2
-        new_col = self.position_column * 3
+        new_row = self.row * 2
+        new_col = self.column * 3
 
         layout.addWidget(self.graph, new_row, new_col, 2, 3)
         #self.button = button(layout, new_row, new_col)
@@ -200,12 +201,12 @@ class Window(object):
 
         parameters = read_cfg.Parameters(config_file)
 
-        self.max_time = parameters.general.max_time
-        self.nb_row = parameters.general.nb_row
-        self.nb_col = parameters.general.nb_column
+        self.max_time = parameters.max_time
+        self.nb_row = parameters.nb_row
+        self.nb_col = parameters.nb_column
         self.nb_figure = self.nb_row * self.nb_col
-        self.title = parameters.general.title
-        self.anti_aliasing = parameters.general.anti_aliasing
+        self.title = parameters.title
+        self.anti_aliasing = parameters.anti_aliasing
 
         self.window = QtGui.QWidget()
         self.window.setStyleSheet("QWidget {background-color: #111111 }")
@@ -216,22 +217,45 @@ class Window(object):
 
         pg.setConfigOptions(antialias=self.anti_aliasing)
 
-        for i in range(self.nb_figure):
+        # A figure contains 0 or more curves
+        self.figures = {}
 
-            curves_list = []
+        # A curve belong to exactly one figure
+        self.curves = {}
 
-            for j in range(parameters.curves.nb):
-                if (int(parameters.figures[i].row) == int(parameters.curves.curve_data[j].row)) and (int(parameters.figures[i].column) == int(parameters.curves.curve_data[j].column)):
-                    curves_list.append(
-                        Curve(parameters.curves.curve_data[j]))
+        for pos, figure_param in parameters.figures.items():
+            row = pos[0]
+            column = pos[1]
+            self.figures[pos] = Figure(self.layout, row, column, self.max_time,
+                                       figure_param.title,
+                                       figure_param.label_x,
+                                       figure_param.unit_x,
+                                       figure_param.label_y,
+                                       figure_param.unit_y,
+                                       figure_param.min_y,
+                                       figure_param.max_y,
+                                       figure_param.grid_x,
+                                       figure_param.grid_y)
 
-            self.figure_list.append(Figure(self.layout, self.max_time,
-                                           parameters.figures[i],
-                                           curves_list))
+        for name, curve_param in parameters.curves.items():
+            curve = Curve(curve_param.legend, curve_param.color)
+            self.curves[name] = curve
+
+            curve_row = curve_param.row
+            curve_column = curve_param.column
+
+            # A curve belong to exactly one figure
+            curve.figure = self.figures[(curve_row, curve_column)]
+
+            # A figure contains 0 or more curves
+            self.figures[(curve_row, curve_column)].curves[name] = curve
 
         self.window.setLayout(self.layout)
 
         self.window.show()
+
+    def update(self, curve_name, list_x, list_y):
+        self.curves[curve_name]
 
     def update_one_figure(self, data_list_X, dataListY, row, column):
         """
