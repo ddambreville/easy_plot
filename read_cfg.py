@@ -144,14 +144,36 @@ class CurveParameters(object):
 
     def __init__(self, dic):
 
+        dic_plot = dic["Plot"]
+
         self.curve_data = []
 
-        for key in dic["Plot"].keys():
-            if len(dic["Plot"][key]) >= 4:
-                self.curve_data.append(CurveParametersData(key, dic["Plot"][key][
-                                       0], dic["Plot"][key][1], dic["Plot"][key][2], dic["Plot"][key][3]))
+        for name, parameters in dic_plot.items():
+            nb_parameter = len(parameters)
+            if nb_parameter == 4:
+                (row, column, legend, color) = parameters
+                curve_parameters_data = CurveParametersData(name, row, column,
+                                                            legend, color)
+                self.curve_data.append(curve_parameters_data)
             else:
-                print "WARNING: Argument missing for key " + str(key)
+                print "Easy Plot configuration file MUST have a section named"
+                print "[Plot] like the one following :"
+                print
+                print "[Plot]"
+                print "[CurveName] : [Row] [Column] [Legend] [Color]"
+                print "[CurveName] : [Row] [Column] [Legend] [Color]"
+                print "[CurveName] : [Row] [Column] [Legend] [Color]"
+                print "[CurveName] : [Row] [Column] [Legend] [Color]"
+                print "..."
+                print
+                print "where :"
+                print "- [CurveName] is the name of the curve"
+                print "- [Row] is the row number of the curve"
+                print "- [Column] is the column number of the curve"
+                print "- [Legend] is the legend of the curve"
+                print "- [Color] is the color of the curve"
+
+                exit()
 
         self.nb = len(self.curve_data)
 
