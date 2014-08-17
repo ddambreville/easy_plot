@@ -15,7 +15,7 @@ import tools
 #========================Class Definitions=====================================
 
 
-class generalParameter(object):
+class GeneralParameter(object):
 
     """
     GeneralParameter class
@@ -182,12 +182,12 @@ def defineParameters(config_file):
     """
     conf = tools.readConfigFile(config_file)
 
-    general_parameters = generalParameter(conf)
+    general_parameters = GeneralParameter(conf)
     curve_parameters = curveParameters(conf)
     figures_parameters = []
 
-    for i in range(general_parameters.number_of_rows):
-        for j in range(general_parameters.number_of_columns):
+    for i in range(general_parameters.nb_row):
+        for j in range(general_parameters.nb_column):
             figures_parameters.append(figureParameter(conf, i + 1, j + 1))
 
     return allParameters(general_parameters, figures_parameters, curve_parameters)

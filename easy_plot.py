@@ -23,12 +23,12 @@ except ImportError:
 
 from pyqtgraph.Qt import QtGui, QtCore
 
-import Read_cfg as rd
+import read_cfg as rd
 
 #========================Class Definitions=====================================
 
 
-class button(object):
+class Button(object):
 
     """
     button class
@@ -191,26 +191,25 @@ class Figure(object):
 class Window(object):
 
     """
-    window class
+    Window class
     This class permits the gestion of all the window
     """
 
-    def __init__(self, configs_file, resX, resY):
-
+    def __init__(self, config_file, res_x=1920, res_y=1080):
         self.app = QtGui.QApplication([])
 
-        parameters = rd.defineParameters(configs_file)
+        parameters = rd.defineParameters(config_file)
 
         self.max_time = parameters.general_parameters.max_time
-        self.nb_row = parameters.general_parameters.number_of_rows
-        self.nb_col = parameters.general_parameters.number_of_columns
+        self.nb_row = parameters.general_parameters.nb_row
+        self.nb_col = parameters.general_parameters.nb_column
         self.nb_figure = self.nb_row * self.nb_col
         self.title = parameters.general_parameters.title
         self.anti_aliasing = parameters.general_parameters.anti_aliasing
 
         self.window = QtGui.QWidget()
         self.window.setStyleSheet("QWidget {background-color: #111111 }")
-        self.window.resize(resX, resY)
+        self.window.resize(res_x, res_y)
         self.window.setWindowTitle(self.title)
         self.layout = QtGui.QGridLayout()
         self.figure_list = []

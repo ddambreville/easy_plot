@@ -18,7 +18,7 @@ This file aim to explane how to use multi_plotter API with an exemple
 ===============================================================================
 '''
 
-import Multi_Plotter as mp
+import easy_plot
 import numpy as np
 
 
@@ -28,13 +28,9 @@ def main():
     listx = []
     listy = []
 
-    # definition of window's resolution
-    res_X = 1920
-    res_Y = 1080
-
     # Creation of the window from multi_plotter2.cfg configuration file,
     # and resolution defined before.
-    my_window = mp.Window("easy_plot.cfg", res_X, res_Y)
+    my_window = easy_plot.Window("easy_plot.cfg")
 
     # Creation of exemple data list, to put on figures
     # structure of a list is following:
