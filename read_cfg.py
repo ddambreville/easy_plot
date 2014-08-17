@@ -143,8 +143,29 @@ class CurveParametersData(object):
 class CurveParameters(object):
 
     def __init__(self, dic):
+        def print_help():
+            print "Easy Plot configuration file MUST have a section named"
+            print "[Plot] like the one following :"
+            print
+            print "[Plot]"
+            print "[CurveName] : [Row] [Column] [Legend] [Color]"
+            print "[CurveName] : [Row] [Column] [Legend] [Color]"
+            print "[CurveName] : [Row] [Column] [Legend] [Color]"
+            print "[CurveName] : [Row] [Column] [Legend] [Color]"
+            print "..."
+            print
+            print "where :"
+            print "- [CurveName] is the name of the curve"
+            print "- [Row] is the row number of the curve"
+            print "- [Column] is the column number of the curve"
+            print "- [Legend] is the legend of the curve"
+            print "- [Color] is the color of the curve"
 
-        dic_plot = dic["Plot"]
+        try:
+            dic_plot = dic["Curves"]
+        except KeyError:
+            print_help()
+            exit()
 
         self.curve_data = []
 
@@ -156,23 +177,7 @@ class CurveParameters(object):
                                                             legend, color)
                 self.curve_data.append(curve_parameters_data)
             else:
-                print "Easy Plot configuration file MUST have a section named"
-                print "[Plot] like the one following :"
-                print
-                print "[Plot]"
-                print "[CurveName] : [Row] [Column] [Legend] [Color]"
-                print "[CurveName] : [Row] [Column] [Legend] [Color]"
-                print "[CurveName] : [Row] [Column] [Legend] [Color]"
-                print "[CurveName] : [Row] [Column] [Legend] [Color]"
-                print "..."
-                print
-                print "where :"
-                print "- [CurveName] is the name of the curve"
-                print "- [Row] is the row number of the curve"
-                print "- [Column] is the column number of the curve"
-                print "- [Legend] is the legend of the curve"
-                print "- [Color] is the color of the curve"
-
+                print_help()
                 exit()
 
         self.nb = len(self.curve_data)
