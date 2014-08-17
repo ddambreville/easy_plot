@@ -52,7 +52,7 @@ class GeneralParameter(object):
             exit()
 
 
-class figureParameter(object):
+class FigureParameter(object):
 
     """
     figureParameter class
@@ -129,7 +129,7 @@ class figureParameter(object):
             self.unitY = ''
 
 
-class curveParametersData(object):
+class CurveParametersData(object):
 
     def __init__(self, name, row, column, legend, color):
 
@@ -140,7 +140,7 @@ class curveParametersData(object):
         self.color = color
 
 
-class curveParameters(object):
+class CurveParameters(object):
 
     def __init__(self, dic):
 
@@ -148,7 +148,7 @@ class curveParameters(object):
 
         for key in dic["Plot"].keys():
             if len(dic["Plot"][key]) >= 4:
-                self.curve_data.append(curveParametersData(key, dic["Plot"][key][
+                self.curve_data.append(CurveParametersData(key, dic["Plot"][key][
                                        0], dic["Plot"][key][1], dic["Plot"][key][2], dic["Plot"][key][3]))
             else:
                 print "WARNING: Argument missing for key " + str(key)
@@ -169,9 +169,9 @@ class Parameters(object):
         conf_dic = tools.readConfigFile(config_file_path)
 
         self.general = GeneralParameter(conf_dic)
-        self.curves = curveParameters(conf_dic)
+        self.curves = CurveParameters(conf_dic)
 
         self.figures = []
         for i in range(self.general.nb_row):
             for j in range(self.general.nb_column):
-                self.figures.append(figureParameter(conf_dic, i + 1, j + 1))
+                self.figures.append(FigureParameter(conf_dic, i + 1, j + 1))
