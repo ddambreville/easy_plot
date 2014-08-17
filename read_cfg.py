@@ -24,37 +24,32 @@ class generalParameter(object):
 
     def __init__(self, dic):
 
-        if "General" in dic:
-            try:
-                self.number_of_rows = int(dic["General"]["NumberOfRows"][0])
-                self.number_of_columns = int(
-                    dic["General"]["NumberOfColumns"][0])
-            except:
-                print "Error: There is no informations for rows and columns number"
-                self.number_of_rows = 1
-                self.number_of_columns = 1
+        try:
+            self.nb_row = int(dic["General"]["NumberOfRows"][0])
+            self.nb_column = int(dic["General"]["NumberOfColumns"][0])
+            self.max_time = int(dic["General"]["MaxTime"][0])
+            self.title = str(' '.join(dic["General"]["Title"]))
+            self.anti_aliasing = bool(dic["General"]["Anti-aliasing"][0])
+        except (IndexError, KeyError):
+            print "Easy Plot configuration file MUST have a section named"
+            print "[General] like the one following :"
+            print
+            print "[General]"
+            print "NumberOfRows    : [number of rows]"
+            print "NumberOfColumns : [number of columns]"
+            print "MaxTime         : [maximum time]"
+            print "Title           : [title]"
+            print "Anti-aliasing   : [anti aliasing]"
+            print
+            print "where :"
+            print "- [number of rows] is the number of rows"
+            print "- [number of columns] is the number of colums"
+            print "- [maximum time] is the maximum time of each curve"
+            print "- [title] is the title of the window"
+            print "- [anti aliasing] is True if you want anti aliasing to be"
+            print "  applied to the window, False else"
 
-            if "MaxTime" in dic["General"]:
-                self.max_time = int(dic["General"]["MaxTime"][0])
-            else:
-                self.max_time = 200
-
-            if "Title" in dic["General"]:
-                self.title = str(' '.join(dic["General"]["Title"]))
-            else:
-                self.title = "No Title"
-
-            if "Anti-aliasing" in dic["General"]:
-                self.anti_aliasing = bool(dic["General"]["Anti-aliasing"][0])
-            else:
-                self.anti_aliasing = False
-        else:
-            print "WARNING: Their is no general informations -> Set parameters to Default"
-            self.number_of_rows = 1
-            self.number_of_columns = 1
-            self.max_time = 200
-            self.title = "No Title"
-            self.anti_aliasing = False
+            exit()
 
 
 class figureParameter(object):
