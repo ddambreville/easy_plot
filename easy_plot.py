@@ -23,7 +23,7 @@ except ImportError:
 
 from pyqtgraph.Qt import QtGui, QtCore
 
-import read_cfg as rd
+import read_cfg
 
 #========================Class Definitions=====================================
 
@@ -198,14 +198,14 @@ class Window(object):
     def __init__(self, config_file, res_x=1920, res_y=1080):
         self.app = QtGui.QApplication([])
 
-        parameters = rd.defineParameters(config_file)
+        parameters = read_cfg.Parameters(config_file)
 
-        self.max_time = parameters.general_parameters.max_time
-        self.nb_row = parameters.general_parameters.nb_row
-        self.nb_col = parameters.general_parameters.nb_column
+        self.max_time = parameters.general.max_time
+        self.nb_row = parameters.general.nb_row
+        self.nb_col = parameters.general.nb_column
         self.nb_figure = self.nb_row * self.nb_col
-        self.title = parameters.general_parameters.title
-        self.anti_aliasing = parameters.general_parameters.anti_aliasing
+        self.title = parameters.general.title
+        self.anti_aliasing = parameters.general.anti_aliasing
 
         self.window = QtGui.QWidget()
         self.window.setStyleSheet("QWidget {background-color: #111111 }")
@@ -220,13 +220,13 @@ class Window(object):
 
             curves_list = []
 
-            for j in range(parameters.curves_parameters.number_of_curves):
-                if (int(parameters.figures_parameters[i].row) == int(parameters.curves_parameters.curve_data[j].row)) and (int(parameters.figures_parameters[i].column) == int(parameters.curves_parameters.curve_data[j].column)):
+            for j in range(parameters.curves.nb):
+                if (int(parameters.figures[i].row) == int(parameters.curves.curve_data[j].row)) and (int(parameters.figures[i].column) == int(parameters.curves.curve_data[j].column)):
                     curves_list.append(
-                        Curve(parameters.curves_parameters.curve_data[j]))
+                        Curve(parameters.curves.curve_data[j]))
 
             self.figure_list.append(Figure(self.layout, self.max_time,
-                                           parameters.figures_parameters[i],
+                                           parameters.figures[i],
                                            curves_list))
 
         self.window.setLayout(self.layout)

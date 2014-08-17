@@ -153,41 +153,25 @@ class curveParameters(object):
             else:
                 print "WARNING: Argument missing for key " + str(key)
 
-        self.number_of_curves = len(self.curve_data)
+        self.nb = len(self.curve_data)
 
-        if self.number_of_curves == 0:
+        if self.nb == 0:
             print "WARNING: No curve detected"
 
 
-class allParameters(object):
+class Parameters(object):
 
-    """
-    AllParameters class
-    This class permits to regroup general_parameter and figure_parameter
-    """
+    """Contains all parameters of configuration file"""
 
-    def __init__(self, general_parameters, figures_parameters, curves_parameters):
-        self.general_parameters = general_parameters
-        self.figures_parameters = figures_parameters
-        self.curves_parameters = curves_parameters
+    def __init__(self, config_file_path):
+        self.config_file_path = config_file_path
 
+        conf_dic = tools.readConfigFile(config_file_path)
 
-#========================Function Definition===================================
+        self.general = GeneralParameter(conf_dic)
+        self.curves = curveParameters(conf_dic)
 
-
-def defineParameters(config_file):
-    """
-    Use readConfigFile from tools to put all datas from config file in an
-    allParameters class
-    """
-    conf = tools.readConfigFile(config_file)
-
-    general_parameters = GeneralParameter(conf)
-    curve_parameters = curveParameters(conf)
-    figures_parameters = []
-
-    for i in range(general_parameters.nb_row):
-        for j in range(general_parameters.nb_column):
-            figures_parameters.append(figureParameter(conf, i + 1, j + 1))
-
-    return allParameters(general_parameters, figures_parameters, curve_parameters)
+        self.figures = []
+        for i in range(self.general.nb_row):
+            for j in range(self.general.nb_column):
+                self.figures.append(figureParameter(conf_dic, i + 1, j + 1))
