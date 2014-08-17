@@ -166,7 +166,7 @@ class Parameters(object):
     def __init__(self, config_file_path):
         self.config_file_path = config_file_path
 
-        conf_dic = tools.readConfigFile(config_file_path)
+        conf_dic = tools.read_config_file(config_file_path)
 
         self.general = GeneralParameter(conf_dic)
         self.curves = CurveParameters(conf_dic)

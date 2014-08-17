@@ -21,16 +21,16 @@ Created on 2014/05/03
 import ConfigParser
 
 
-def readConfigFile(configFilePath):
-    """ Return the dictionnary corresponding to the configFilePath."""
+def read_config_file(config_file_path):
+    """Return the dictionnary corresponding to the config_file_path."""
     dic = {}
-    for section in listConfigFileSections(configFilePath):
-        dic[section] = readConfigFileSection(configFilePath, section)
+    for section in list_config_file_sections(config_file_path):
+        dic[section] = read_config_file_section(config_file_path, section)
 
     return dic
 
 
-def readConfigFileSection(configFilePath, section):
+def read_config_file_section(config_file_path, section):
     """
         Use ConfigParser for reading a configuration file.
         Returns an dictionnary with keys/values of the section.
@@ -38,7 +38,7 @@ def readConfigFileSection(configFilePath, section):
 
     config = ConfigParser.ConfigParser()
     config.optionxform = str
-    config.read(configFilePath)
+    config.read(config_file_path)
 
     if config.has_section(section):
         configSection = config._sections[section]
@@ -53,10 +53,10 @@ def readConfigFileSection(configFilePath, section):
         return {}
 
 
-def listConfigFileSections(configFilePaths):
-    """List all the sections of the file <configFilePaths>"""
+def list_config_file_sections(config_file_path):
+    """List all the sections of the file <config_file_path>"""
     config = ConfigParser.ConfigParser()
     config.optionxform = str
-    config.read(configFilePaths)
+    config.read(config_file_path)
 
     return config.sections()
