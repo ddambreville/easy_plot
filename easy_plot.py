@@ -145,43 +145,43 @@ class Figure(object):
 
         self.curves = {}
 
-        self.graph = pg.PlotWidget(title=self.title)
-        self.graph.setYRange(self.min_y, self.max_y)
-        self.graph.setLabel('bottom', self.label_x, units=self.unit_x)
-        self.graph.setLabel('left', self.label_y, units=self.unit_y)
-        self.graph.showGrid(x=self.grid_x, y=self.grid_y)
+        self.pw = pg.PlotWidget(title=self.title)
+        self.pw.setYRange(self.min_y, self.max_y)
+        self.pw.setLabel('bottom', self.label_x, units=self.unit_x)
+        self.pw.setLabel('left', self.label_y, units=self.unit_y)
+        self.pw.showGrid(x=self.grid_x, y=self.grid_y)
 
         # If there is at least one curve in the figure
         if self.curves != {}:
-            self.graph.addLegend()
+            self.pw.addLegend()
 
-        # self.graph.hideButtons()
+        # self.pw.hideButtons()
 
         new_row = self.row * 2
         new_col = self.column * 3
 
-        layout.addWidget(self.graph, new_row, new_col, 2, 3)
+        layout.addWidget(self.pw, new_row, new_col, 2, 3)
         #self.button = button(layout, new_row, new_col)
 
     def _action_button(self):
         if self.button.auto_scale == 1:
-            self.graph.enableAutoRange()
+            self.pw.enableAutoRange()
         else:
-            self.graph.disableAutoRange()
+            self.pw.disableAutoRange()
 
         if self.button.auto_range == 1:
             if len(self.curves_list) != 0:
-                self.graph.setXRange(self.curves_list[0].data_cloud_x[0] -
-                                     int(self.max_time / 2),
-                                     self.curves_list[0].data_cloud_x[0] +
-                                     int(self.max_time / 2))
+                self.pw.setXRange(self.curves_list[0].data_cloud_x[0] -
+                                  int(self.max_time / 2),
+                                  self.curves_list[0].data_cloud_x[0] +
+                                  int(self.max_time / 2))
             else:
-                self.graph.setXRange(0, self.max_time)
+                self.pw.setXRange(0, self.max_time)
         else:
             pass
 
     def clear(self):
-        self.graph.clear()
+        self.pw.clear()
 
 
 class Window(object):
