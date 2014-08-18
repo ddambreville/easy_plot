@@ -180,12 +180,7 @@ class Figure(object):
         else:
             pass
 
-    def update_figure(self, dataListX, dataListY):
-        for i in range(len(self.curves_list)):
-            self.curves_list[i].update_point(dataListX[i], dataListY[i])
-            self.curves_list[i].show_curve(self.graph)
-
-    def clear_figure(self):
+    def clear(self):
         self.graph.clear()
 
 
@@ -255,37 +250,9 @@ class Window(object):
         self.window.show()
 
     def update(self, curve_name, list_x, list_y):
-        self.curves[curve_name]
-
-    def update_one_figure(self, data_list_X, dataListY, row, column):
-        """
-        Update the figure situated on the window at (row;column) coordonate
-        only, with data_list_X and dataListY datas.
-        """
-
-        flag = False
-
-        for i in range(self.nb_figure):
-            if self.figure_list[i].position_row == row and \
-                self.figure_list[i].position_column == column:
-                self.figure_list[i].clear_figure()
-                self.figure_list[i].update_figure(data_list_X, dataListY)
-                flag = True
-
-        if not flag:
-            print "ERROR: Can't Update figure at " + str(row) + "-" + \
-                str(column) + " -> Not Found"
-
-    def update_all_window(self, dataListListX, dataListListY):
-        """
-        Update all figures situated on the window, with dataListListX and
-        dataListListY datas.
-        """
-
-        for i in range(self.nb_figure):
-            self.figure_list[i].clear_figure()
-            self.figure_list[i].update_figure(
-                dataListListX[i], dataListListY[i])
+        curve = self.curves[curve_name]
+        curve.figure.graph.plot(list_x, list_y, pen=curve.color,
+                                name=curve.legend)
 
     def run(self):
         self.app.exec_()  # Execution of the application
