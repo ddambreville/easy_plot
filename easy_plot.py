@@ -25,8 +25,6 @@ from pyqtgraph.Qt import QtGui, QtCore
 
 import read_cfg
 
-#========================Class Definitions=====================================
-
 
 class Button(object):
 
@@ -97,26 +95,13 @@ class Curve(object):
     This class permits the gestion of curves in figures
     """
 
-    def __init__(self, legend, color):
+    def __init__(self, legend, color, plot):
         self.legend = legend
         self.color = color
+        self.plot = plot
 
-        self.data_cloud_x = [0]
-        self.data_cloud_y = [0]
-        self.curve_plot = False
-
-    def update_point(self, data_cloud_x, data_cloud_y):
-        self.data_cloud_x = data_cloud_x
-        self.data_cloud_y = data_cloud_y
-
-    def show_curve(self, graph):
-        if self.curve_plot == False:
-            self.curve_plot = graph.plot(
-                self.data_cloud_x, self.data_cloud_y, pen=self.color,
-                name=self.legend)
-        else:
-            self.curve_plot = graph.plot(
-                self.data_cloud_x, self.data_cloud_y, pen=self.color)
+        self.datas_x = []
+        self.datas_y = []
 
 
 class Figure(object):
@@ -129,9 +114,9 @@ class Figure(object):
     def __init__(self, layout, row, column, max_time, title, label_x, unit_x,
                  label_y, unit_y, min_y, max_y, grid_x, grid_y):
 
+        # Figure parameters
         self.row = row
         self.column = column
-
         self.max_time = max_time
         self.title = title
         self.label_x = label_x
@@ -143,8 +128,10 @@ class Figure(object):
         self.grid_x = grid_x
         self.grid_y = grid_y
 
+        # Contains all the curves plotted in this figure
         self.curves = {}
 
+        # Figure graphicals parameters
         self.pw = pg.PlotWidget(title=self.title)
         self.pw.setYRange(self.min_y, self.max_y)
         self.pw.setLabel('bottom', self.label_x, units=self.unit_x)
@@ -180,9 +167,6 @@ class Figure(object):
         else:
             pass
 
-    def clear(self):
-        self.pw.clear()
-
 
 class Window(object):
 
@@ -192,9 +176,10 @@ class Window(object):
     """
 
     def __init__(self, config_file, res_x=1920, res_y=1080):
-        self.app = QtGui.QApplication([])
-
         parameters = read_cfg.Parameters(config_file)
+
+        self.app = QtGui.QApplication([])
+        self.window = QtGui.QWidget()
 
         self.max_time = parameters.max_time
         self.nb_row = parameters.nb_row
@@ -203,14 +188,11 @@ class Window(object):
         self.title = parameters.title
         self.anti_aliasing = parameters.anti_aliasing
 
-        self.window = QtGui.QWidget()
         self.window.setStyleSheet("QWidget {background-color: #111111 }")
         self.window.resize(res_x, res_y)
         self.window.setWindowTitle(self.title)
         self.layout = QtGui.QGridLayout()
         self.figure_list = []
-
-        pg.setConfigOptions(antialias=self.anti_aliasing)
 
         # A figure contains 0 or more curves
         self.figures = {}
@@ -218,6 +200,9 @@ class Window(object):
         # A curve belong to exactly one figure
         self.curves = {}
 
+        pg.setConfigOptions(antialias=self.anti_aliasing)
+
+        # Populate the figures dictionnary
         for pos, figure_param in parameters.figures.items():
             row = pos[0]
             column = pos[1]
@@ -232,15 +217,19 @@ class Window(object):
                                        figure_param.grid_x,
                                        figure_param.grid_y)
 
+        # Populate the curves dictionnary
         for name, curve_param in parameters.curves.items():
-            curve = Curve(curve_param.legend, curve_param.color)
-            self.curves[name] = curve
-
             curve_row = curve_param.row
             curve_column = curve_param.column
 
-            # A curve belong to exactly one figure
-            curve.figure = self.figures[(curve_row, curve_column)]
+            figure = self.figures[(curve_row, curve_column)]
+
+            plot = figure.pw.plot(pen=curve_param.color,
+                                  name=curve_param.legend)
+
+            curve = Curve(curve_param.legend, curve_param.color, plot)
+
+            self.curves[name] = curve
 
             # A figure contains 0 or more curves
             self.figures[(curve_row, curve_column)].curves[name] = curve
@@ -249,10 +238,15 @@ class Window(object):
 
         self.window.show()
 
-    def update(self, curve_name, list_x, list_y):
+        print self.curves
+
+    def add_point(self, curve_name, x, y):
         curve = self.curves[curve_name]
-        curve.figure.graph.plot(list_x, list_y, pen=curve.color,
-                                name=curve.legend)
+
+        curve.datas_x.append(x)
+        curve.datas_y.append(y)
+
+        curve.plot.setData(curve.datas_x, curve.datas_y)
 
     def run(self):
-        self.app.exec_()  # Execution of the application
+        self.app.exec_()
