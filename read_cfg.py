@@ -51,6 +51,9 @@ class Parameters(object):
     """Contains all parameters of configuration file"""
 
     def __init__(self, config_file_path):
+        self.figures = {}
+        self.curves = {}
+
         conf_dic = tools.read_config_file(config_file_path)
 
         # General parameters
@@ -82,11 +85,6 @@ class Parameters(object):
             print "  applied to the window, False else"
 
             exit()
-
-        # A figure contains 0 or more curves
-        # A curve belong exactly to one figure
-        self.figures = {}
-        self.curves = {}
 
         # Figures parameters
 
