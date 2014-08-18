@@ -238,8 +238,6 @@ class Window(object):
 
         self.window.show()
 
-        print self.curves
-
     def add_point(self, curve_name, x, y):
         curve = self.curves[curve_name]
 

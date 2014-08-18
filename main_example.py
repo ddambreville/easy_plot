@@ -19,18 +19,32 @@ This file aim to explane how to use multi_plotter API with an exemple
 '''
 
 import easy_plot
-import numpy as np
+import time
+import threading
+import math
 
 
 def main():
 
-    # Creation of the window from multi_plotter2.cfg configuration file,
-    # and resolution defined before.
     my_window = easy_plot.Window("easy_plot.cfg")
 
-    print my_window.figures
+    def loop():
+        time.sleep(1)
+        t0 = time.time()
+
+        while(True):
+            t = time.time() - t0
+            y = math.cos(t)
+            my_window.add_point("Courbe1", t, y)
+            my_window.add_point("Courbe2", t, -y)
+            my_window.add_point("Courbe3", t, -y)
+
+            time.sleep(0.05)
+
+    logThread = threading.Thread(target=loop)
+    logThread.daemon = True
+    logThread.start()
 
     my_window.run()
-
 
 main()
