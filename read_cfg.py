@@ -126,12 +126,12 @@ class Parameters(object):
                 unit_y = None
 
             try:
-                min_y = int(dic_fig_caract["minY"][0])
+                min_y = int(dic_fig_caract["MinY"][0])
             except KeyError:
                 min_y = DEFAULT_MIN
 
             try:
-                max_y = int(dic_fig_caract["maxY"][0])
+                max_y = int(dic_fig_caract["MaxY"][0])
             except KeyError:
                 max_y = DEFAULT_MAX
 
