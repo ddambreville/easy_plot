@@ -67,9 +67,9 @@ class Parameters(object):
             self.anti_aliasing = bool(general_dic["Anti-aliasing"][0])
         except (IndexError, KeyError):
             print "Easy Plot configuration file MUST have a section named"
-            print GENERAL_SECTION + "like the one following :"
+            print GENERAL_SECTION + " like the one following :"
             print
-            print "[ " + GENERAL_SECTION + " ]"
+            print "[" + GENERAL_SECTION + "]"
             print "NumberOfRows    : [number of rows]"
             print "NumberOfColumns : [number of columns]"
             print "MaxTime         : [maximum time]"
