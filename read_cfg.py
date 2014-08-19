@@ -14,8 +14,8 @@ import tools
 
 GENERAL_SECTION = "General"
 CURVES_SECTION = "Curves"
-DEFAULT_MIN = -10
-DEFAULT_MAX = 10
+DEFAULT_MIN = None
+DEFAULT_MAX = None
 
 
 class Curve(object):
