@@ -21,25 +21,27 @@ This file aim to explane how to use multi_plotter API with an exemple
 import easy_plot
 import time
 import threading
-import math
+import csv
 
 
 def main():
 
     my_window = easy_plot.Window("easy_plot.cfg")
+    for figure in my_window.figures.values():
+        figure.pw.setXRange(0, 20)
+
+    dic_data = csv.DictReader(open("RWristYaw.csv"))
 
     def loop():
-        time.sleep(1)
-        t0 = time.time()
+        for row in dic_data:
+            x = float(row["Time"])
 
-        while(True):
-            t = time.time() - t0
-            y = math.cos(t)
-            my_window.add_point("Courbe1", t, y)
-            my_window.add_point("Courbe2", t, -y)
-            my_window.add_point("Courbe3", t, -y)
+            for key, value in row.items():
+                if key != "Time":
+                    y = float(value)
+                    my_window.add_point(key, x, y)
 
-            time.sleep(0.05)
+            time.sleep(0.2)
 
     logThread = threading.Thread(target=loop)
     logThread.daemon = True
