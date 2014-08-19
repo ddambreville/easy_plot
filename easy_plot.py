@@ -246,5 +246,13 @@ class Window(object):
 
         curve.plot.setData(curve.datas_x, curve.datas_y)
 
+    def curve_plot(self, curve_name, datas_x, datas_y):
+        curve = self.curves[curve_name]
+
+        curve.datas_x = datas_x
+        curve.datas_y = datas_y
+
+        curve.plot.setData(curve.datas_x, curve.datas_y)
+
     def run(self):
         self.app.exec_()
