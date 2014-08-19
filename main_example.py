@@ -31,15 +31,40 @@ def main():
         figure.pw.setXRange(0, 20)
 
     dic_data = csv.DictReader(open("RWristYaw.csv"))
+    list_time = []
+    list_actuator = []
+    list_sensor = []
+    list_error = []
+    list_actuator_p_eps = []
+    list_actuator_m_eps = []
+    list_eps = []
+    list_m_eps = []
+
+    for row in dic_data:
+        list_time.append(float(row["Time"]))
+        list_actuator.append(float(row["Actuator"]))
+        list_sensor.append(float(row["Sensor"]))
+        list_error.append(float(row["Error"]))
+        list_actuator_p_eps.append(float(row["Actuator+Eps"]))
+        list_actuator_m_eps.append(float(row["Actuator-Eps"]))
+        list_eps.append(float(row["Eps"]))
+        list_m_eps.append(float(row["-Eps"]))
+
+    zipette = zip(list_time, list_actuator, list_sensor, list_error,
+                  list_actuator_p_eps, list_actuator_m_eps, list_eps,
+                  list_m_eps)
 
     def loop():
-        for row in dic_data:
-            x = float(row["Time"])
+        for item in zipette:
+            (x, actuator, sensor, error, act_p_e, act_m_e, eps, m_eps) = item
 
-            for key, value in row.items():
-                if key != "Time":
-                    y = float(value)
-                    my_window.add_point(key, x, y)
+            my_window.add_point("Actuator", x, actuator)
+            my_window.add_point("Sensor", x, sensor)
+            my_window.add_point("Actuator+Eps", x, act_p_e)
+            my_window.add_point("Actuator-Eps", x, act_m_e)
+            my_window.add_point("Error", x, error)
+            my_window.add_point("Eps", x, eps)
+            my_window.add_point("-Eps", x, m_eps)
 
             time.sleep(0.2)
 
