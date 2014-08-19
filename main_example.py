@@ -30,7 +30,7 @@ def main():
     for figure in my_window.figures.values():
         figure.pw.setXRange(0, 20)
 
-    dic_data = csv.DictReader(open("RWristYaw.csv"))
+    dic_data = csv.DictReader(open("example.csv"))
     list_time = []
     list_actuator = []
     list_sensor = []
