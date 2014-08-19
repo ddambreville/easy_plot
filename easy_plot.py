@@ -10,6 +10,16 @@ Contact: rcarriere@presta.aldebaran-robotics.fr
 Copyright: Aldebaran Robotics 2014
 """
 
+DEFAULT_CONFIG_FILE = "easy_plot.cfg"
+DEFAULT_ABSCISSA = "Time"
+
+import argparse
+import os.path
+import read_cfg
+import csv
+
+from pyqtgraph.Qt import QtGui, QtCore
+
 try:
     import pyqtgraph as pg
 except ImportError:
@@ -20,10 +30,6 @@ except ImportError:
     print '"pip install pyqtgraph" in a command line interface.'
 
     exit()
-
-from pyqtgraph.Qt import QtGui, QtCore
-
-import read_cfg
 
 
 class Button(object):
@@ -133,7 +139,10 @@ class Figure(object):
 
         # Figure graphicals parameters
         self.pw = pg.PlotWidget(title=self.title)
-        self.pw.setYRange(self.min_y, self.max_y)
+
+        if self.min_y != None and self.max_y != None:
+            self.pw.setYRange(self.min_y, self.max_y)
+
         self.pw.setLabel('bottom', self.label_x, units=self.unit_x)
         self.pw.setLabel('left', self.label_y, units=self.unit_y)
         self.pw.showGrid(x=self.grid_x, y=self.grid_y)
@@ -238,21 +247,74 @@ class Window(object):
 
         self.window.show()
 
-    def add_point(self, curve_name, x, y):
+    def add_point(self, curve_name, x, y, has_to_plot=True):
         curve = self.curves[curve_name]
 
         curve.datas_x.append(x)
         curve.datas_y.append(y)
 
-        curve.plot.setData(curve.datas_x, curve.datas_y)
+        if has_to_plot:
+            curve.plot.setData(curve.datas_x, curve.datas_y)
 
-    def curve_plot(self, curve_name, datas_x, datas_y):
+    def curve_display(self, curve_name):
         curve = self.curves[curve_name]
-
-        curve.datas_x = datas_x
-        curve.datas_y = datas_y
-
         curve.plot.setData(curve.datas_x, curve.datas_y)
 
     def run(self):
         self.app.exec_()
+
+
+def main():
+    """Read the configuration file, the data file and plot"""
+    parser = argparse.ArgumentParser(description="Plot datas from a CSV file")
+
+    parser.add_argument("data_file_list", metavar="DATAFILE", nargs="+",
+                        help="Input CSV data files")
+
+    parser.add_argument("-c", "--configFile", dest="config_file",
+                        default=DEFAULT_CONFIG_FILE,
+                        help="configuration plot file\
+                        (default: easy_plot.cfg)")
+
+    parser.add_argument("-a", "--abscissa", dest="abscissa",
+                        default=DEFAULT_ABSCISSA,
+                        help="asbcissa name\
+                        (default: Time)")
+
+    args = parser.parse_args()
+
+    config_file = args.config_file
+    data_file_list = args.data_file_list
+    abscissa = args.abscissa
+
+    # Test if configuration file exists
+    if not os.path.isfile(config_file):
+        print 'ERROR : File "' + config_file + '" cannot be found'
+        exit()
+
+    # Test if all data files exist
+    for data_file in data_file_list:
+        if not os.path.isfile(data_file):
+            print 'ERROR : File "' + data_file + '" cannot be found'
+            exit()
+
+    win = Window(args.config_file)
+
+    # For the moment, only ONE data file is usable
+    dic_data = csv.DictReader(open(data_file_list[0]))
+
+    for row in dic_data:
+        x = float(row[abscissa])
+
+        for key, value in row.items():
+            if key != abscissa:
+                y = float(value)
+                win.add_point(key, x, y, False)
+
+    for curve in win.curves:
+        win.curve_display(curve)
+
+    win.run()
+
+if __name__ == '__main__':
+    main()
