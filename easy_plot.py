@@ -134,9 +134,6 @@ class Figure(object):
         self.grid_x = grid_x
         self.grid_y = grid_y
 
-        # Contains all the curves plotted in this figure
-        self.curves = {}
-
         # Figure graphicals parameters
         self.pw = pg.PlotWidget(title=self.title)
 
@@ -146,10 +143,6 @@ class Figure(object):
         self.pw.setLabel('bottom', self.label_x, units=self.unit_x)
         self.pw.setLabel('left', self.label_y, units=self.unit_y)
         self.pw.showGrid(x=self.grid_x, y=self.grid_y)
-
-        # If there is at least one curve in the figure
-        if self.curves != {}:
-            self.pw.addLegend()
 
         # self.pw.hideButtons()
 
@@ -239,9 +232,6 @@ class Window(object):
             curve = Curve(curve_param.legend, curve_param.color, plot)
 
             self.curves[name] = curve
-
-            # A figure contains 0 or more curves
-            self.figures[(curve_row, curve_column)].curves[name] = curve
 
         self.window.setLayout(self.layout)
 
