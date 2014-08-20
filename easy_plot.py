@@ -238,13 +238,14 @@ class Window(object):
         self.window.show()
 
     def add_point(self, curve_name, x, y, has_to_plot=True):
-        curve = self.curves[curve_name]
+        if curve_name in self.curves.keys():
+            curve = self.curves[curve_name]
 
-        curve.datas_x.append(x)
-        curve.datas_y.append(y)
+            curve.datas_x.append(x)
+            curve.datas_y.append(y)
 
-        if has_to_plot:
-            curve.plot.setData(curve.datas_x, curve.datas_y)
+            if has_to_plot:
+                curve.plot.setData(curve.datas_x, curve.datas_y)
 
     def curve_display(self, curve_name):
         curve = self.curves[curve_name]
