@@ -28,7 +28,7 @@ def main():
 
     my_window = easy_plot.Window("easy_plot.cfg")
     for figure in my_window.figures.values():
-        figure.pw.setXRange(0, 20)
+        figure.pw.setXRange(0, 8)
 
     dic_data = csv.DictReader(open("example.csv"))
     list_time = []
@@ -66,7 +66,7 @@ def main():
             my_window.add_point("Eps", x, eps)
             my_window.add_point("-Eps", x, m_eps)
 
-            time.sleep(0.2)
+            time.sleep(0.01)
 
     logThread = threading.Thread(target=loop)
     logThread.daemon = True
