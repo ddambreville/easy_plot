@@ -106,8 +106,9 @@ class Curve(object):
         self.color = color
         self.plot = plot
 
-        self.datas_x = []
-        self.datas_y = []
+        #self.datas_x = []
+        #self.datas_y = []
+        self.datas = {}
 
 
 class Figure(object):
@@ -238,18 +239,23 @@ class Window(object):
         self.window.show()
 
     def add_point(self, curve_name, x, y, has_to_plot=True):
+        #Test if curve name exist in config file
         if curve_name in self.curves.keys():
             curve = self.curves[curve_name]
 
-            curve.datas_x.append(x)
-            curve.datas_y.append(y)
+            curve.datas[x] = y
 
             if has_to_plot:
                 curve.plot.setData(curve.datas_x, curve.datas_y)
 
     def curve_display(self, curve_name):
         curve = self.curves[curve_name]
-        curve.plot.setData(curve.datas_x, curve.datas_y)
+
+        datas_x = curve.datas.keys()
+        datas_x.sort()
+        datas_y = [curve.datas[x] for x in datas_x]
+
+        curve.plot.setData(datas_x, datas_y)
 
     def run(self):
         self.app.exec_()
@@ -291,19 +297,19 @@ def main():
 
     win = Window(args.config_file)
 
-    # For the moment, only ONE data file is usable
-    dic_data = csv.DictReader(open(data_file_list[0]))
+    for data_file in data_file_list:
+        dic_data = csv.DictReader(open(data_file))
 
-    for row in dic_data:
-        x = float(row[abscissa])
+        for row in dic_data:
+            x = float(row[abscissa])
 
-        for key, value in row.items():
-            if key != abscissa:
-                y = float(value)
-                win.add_point(key, x, y, False)
+            for key, value in row.items():
+                if key != abscissa:
+                    y = float(value)
+                    win.add_point(key, x, y, False)
 
-    for curve in win.curves:
-        win.curve_display(curve)
+        for curve in win.curves:
+            win.curve_display(curve)
 
     win.run()
 
