@@ -106,8 +106,6 @@ class Curve(object):
         self.color = color
         self.plot = plot
 
-        #self.datas_x = []
-        #self.datas_y = []
         self.datas = {}
 
 
@@ -300,7 +298,12 @@ def main():
     for data_file in data_file_list:
         dic_data = csv.DictReader(open(data_file))
 
-        for row in dic_data:
+        for index, row in enumerate(dic_data):
+            #Test if abscissa key exist in dic_data
+            if not index:
+                if abscissa not in row:
+                    print 'ERROR : %s not find in File "%s"' % (abscissa, data_file)
+                    exit()
             x = float(row[abscissa])
 
             for key, value in row.items():
