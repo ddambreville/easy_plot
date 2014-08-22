@@ -244,16 +244,24 @@ class Window(object):
             curve.datas[x] = y
 
             if has_to_plot:
-                curve.plot.setData(curve.datas_x, curve.datas_y)
+                datas_x, datas_y = self._dico_to_list(curve_name)
+                curve.plot.setData(datas_x, datas_y)
 
     def curve_display(self, curve_name):
+        curve = self.curves[curve_name]
+
+        datas_x, datas_y = self._dico_to_list(curve_name)
+
+        curve.plot.setData(datas_x, datas_y)
+
+    def _dico_to_list(self, curve_name):
         curve = self.curves[curve_name]
 
         datas_x = curve.datas.keys()
         datas_x.sort()
         datas_y = [curve.datas[x] for x in datas_x]
 
-        curve.plot.setData(datas_x, datas_y)
+        return datas_x, datas_y
 
     def run(self):
         self.app.exec_()
