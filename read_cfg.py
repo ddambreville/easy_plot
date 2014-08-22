@@ -102,47 +102,47 @@ class Parameters(object):
 
             try:
                 title = " ".join(dic_fig_caract["Title"])
-            except KeyError:
+            except (KeyError, IndexError):
                 title = None
 
             try:
                 label_x = " ".join(dic_fig_caract["LabelX"])
-            except KeyError:
+            except (KeyError, IndexError):
                 label_x = None
 
             try:
                 label_y = " ".join(dic_fig_caract["LabelY"])
-            except KeyError:
+            except (KeyError, IndexError):
                 label_y = None
 
             try:
                 unit_x = " ".join(dic_fig_caract["UnitX"])
-            except KeyError:
+            except (KeyError, IndexError):
                 unit_x = None
 
             try:
                 unit_y = " ".join(dic_fig_caract["UnitY"])
-            except KeyError:
+            except (KeyError, IndexError):
                 unit_y = None
 
             try:
                 min_y = int(dic_fig_caract["MinY"][0])
-            except KeyError:
+            except (KeyError, IndexError):
                 min_y = DEFAULT_MIN
 
             try:
                 max_y = int(dic_fig_caract["MaxY"][0])
-            except KeyError:
+            except (KeyError, IndexError):
                 max_y = DEFAULT_MAX
 
             try:
                 grid_x = bool(dic_fig_caract["GridX"][0])
-            except KeyError:
+            except (KeyError, IndexError):
                 grid_x = False
 
             try:
                 grid_y = bool(dic_fig_caract["GridY"][0])
-            except KeyError:
+            except (KeyError, IndexError):
                 grid_y = False
 
             figure = Figure(title, label_x, label_y, unit_x, unit_y, min_y,

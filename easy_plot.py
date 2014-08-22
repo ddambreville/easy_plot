@@ -302,7 +302,7 @@ def main():
             #Test if abscissa key exist in dic_data
             if not index:
                 if abscissa not in row:
-                    print 'ERROR : %s not find in File "%s"' % (abscissa, data_file)
+                    print 'ERROR : "%s" not find in File "%s"' % (abscissa, data_file)
                     exit()
             x = float(row[abscissa])
 
