@@ -17,6 +17,9 @@ import argparse
 import os.path
 import read_cfg
 import csv
+import socket
+import threading
+import time
 
 from pyqtgraph.Qt import QtGui, QtCore
 
@@ -237,11 +240,16 @@ class Window(object):
         self.window.show()
 
     def add_point(self, curve_name, x, y, has_to_plot=True):
-        #Test if curve name exist in config file
+        # Test if curve name exist in config file
         if curve_name in self.curves.keys():
             curve = self.curves[curve_name]
 
-            curve.datas[x] = y
+            if x not in curve.datas:
+                curve.datas[x] = y
+            else:
+                print 'curve %s already have data for time %s'\
+                    % (curve_name, x)
+                exit()
 
             if has_to_plot:
                 datas_x, datas_y = self._dico_to_list(curve_name)
@@ -267,11 +275,44 @@ class Window(object):
         self.app.exec_()
 
 
+def wait_connection(sock, host, window):
+    """Wait connection and run sock's thread"""
+    port = 4521
+    nb_try = 0
+    nb_try_max = 5
+
+    while nb_try <= nb_try_max:
+        try:
+            sock.connect((host, port))
+            break
+        except (socket.error):
+            time.sleep(3)
+            nb_try += 1
+
+    if nb_try >= nb_try_max:
+        print 'Connection to host "%s" impossible' % host
+        exit()
+    sock_run(sock, window)
+
+
+def sock_run(sock, window):
+    """allow data transfer with princial window"""
+    from socket_connection import NewConnection
+    serveur = NewConnection(sock)
+    while True:
+        # Data dispo
+        answer = serveur.is_data_dispo()
+        if answer is not None:
+            for name, data_x, data_y in answer:
+                window.add_point(name, int(data_x), int(data_y))
+        time.sleep(0.5)
+
+
 def main():
     """Read the configuration file, the data file and plot"""
     parser = argparse.ArgumentParser(description="Plot datas from a CSV file")
 
-    parser.add_argument("data_file_list", metavar="DATAFILE", nargs="+",
+    parser.add_argument("data_file_list", metavar="DATAFILE", nargs="*",
                         help="Input CSV data files")
 
     parser.add_argument("-c", "--configFile", dest="config_file",
@@ -284,11 +325,17 @@ def main():
                         help="asbcissa name\
                         (default: Time)")
 
+    parser.add_argument("-s", "--socket", dest="socket",
+                        default=False,
+                        help="socket address\
+                        (default: False)")
+
     args = parser.parse_args()
 
     config_file = args.config_file
     data_file_list = args.data_file_list
     abscissa = args.abscissa
+    sock_host = args.socket
 
     # Test if configuration file exists
     if not os.path.isfile(config_file):
@@ -307,7 +354,7 @@ def main():
         dic_data = csv.DictReader(open(data_file))
 
         for index, row in enumerate(dic_data):
-            #Test if abscissa key exist in dic_data
+            # Test if abscissa key exist in dic_data
             if not index:
                 if abscissa not in row:
                     print 'ERROR : "%s" not find in File "%s"' % (abscissa, data_file)
@@ -322,7 +369,20 @@ def main():
         for curve in win.curves:
             win.curve_display(curve)
 
+    # Test if user want socket connection
+    if sock_host:
+        # get ip address of host
+        host = socket.gethostbyname(sock_host)
+        # creat socket
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        thread_sock = threading.Thread(target=wait_connection,
+                                       args=(sock, host, win))
+        thread_sock.daemon = True
+        thread_sock.start()
+
     win.run()
+
+    exit()
 
 if __name__ == '__main__':
     main()
