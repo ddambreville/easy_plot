@@ -12,6 +12,7 @@ Copyright: Aldebaran Robotics 2014
 
 DEFAULT_CONFIG_FILE = "easy_plot.cfg"
 DEFAULT_ABSCISSA = "Time"
+DEFAULT_SOCK_PORT = 4521
 
 import argparse
 import os.path
@@ -277,7 +278,7 @@ class Window(object):
 
 def wait_connection(sock, host, window):
     """Wait connection and run sock's thread"""
-    port = 4521
+    port = DEFAULT_SOCK_PORT
     nb_try = 0
     nb_try_max = 5
 
@@ -304,8 +305,8 @@ def sock_run(sock, window):
         answer = serveur.is_data_dispo()
         if answer is not None:
             for name, data_x, data_y in answer:
-                window.add_point(name, int(data_x), int(data_y))
-        time.sleep(0.5)
+                window.add_point(name, float(data_x), float(data_y))
+        time.sleep(0.01)
 
 
 def main():

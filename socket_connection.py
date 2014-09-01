@@ -28,6 +28,10 @@ class NewConnection(object):
     def __del__(self):
         """destructeur"""
         self.sock.close()
+        try:
+            del self.queue
+        except NameError:
+            pass
 
     def generate_dico(self):
         """generate dico for socket connection"""
