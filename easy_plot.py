@@ -18,9 +18,9 @@ import os.path
 import read_cfg
 import csv
 
-from pyqtgraph.Qt import QtGui, QtCore
 
 try:
+    from pyqtgraph.Qt import QtGui, QtCore
     import pyqtgraph as pg
 except ImportError:
     print "Well that's embarrassing !"
