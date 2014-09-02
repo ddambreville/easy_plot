@@ -17,6 +17,7 @@ import argparse
 import os.path
 import read_cfg
 import csv
+from re import match as rgxMatch
 
 from pyqtgraph.Qt import QtGui, QtCore
 
@@ -305,7 +306,8 @@ def main():
 
     for data_file in data_file_list:
         with open(data_file) as f:
-            dic_data = csv.DictReader(f)
+            dic_data = csv.DictReader(filter(lambda line: not rgxMatch('\s*#+', line), f))
+
             for index, row in enumerate(dic_data):
                 #Test if abscissa key exist in dic_data
                 if not index:
