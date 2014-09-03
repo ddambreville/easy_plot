@@ -65,6 +65,7 @@ class Parameters(object):
             self.max_time = int(general_dic["MaxTime"][0])
             self.title = str(' '.join(general_dic["Title"]))
             self.anti_aliasing = bool(general_dic["Anti-aliasing"][0])
+            self.update = float(general_dic["UpdateServeur"][0])
         except (IndexError, KeyError):
             print "Easy Plot configuration file MUST have a section named"
             print GENERAL_SECTION + " like the one following :"
@@ -75,6 +76,7 @@ class Parameters(object):
             print "MaxTime         : [maximum time]"
             print "Title           : [title]"
             print "Anti-aliasing   : [anti aliasing]"
+            print "UpdateServeur   : [refresh time]"
             print
             print "where :"
             print "- [number of rows] is the number of rows"
@@ -83,6 +85,7 @@ class Parameters(object):
             print "- [title] is the title of the window"
             print "- [anti aliasing] is True if you want anti aliasing to be"
             print "  applied to the window, False else"
+            print "- [UpdateServeur] is the time between two windows refresh"
 
             exit()
 

@@ -98,7 +98,10 @@ class NewConnection(object):
 
     def add_queue(self, name, data_x, data_y):
         """add Data in serveur queue"""
-        self.queue.put((str(name), str(data_x), str(data_y)))
+        try:
+            self.queue.put((str(name), str(data_x), str(data_y)))
+        except NameError:
+            pass
 
     def wait_client(self):
         """Wait information from client"""

@@ -110,7 +110,9 @@ class Curve(object):
         self.color = color
         self.plot = plot
 
-        self.datas = {}
+        #self.datas = {}
+        self.datas_x = []
+        self.datas_y = []
 
 
 class Figure(object):
@@ -192,6 +194,7 @@ class Window(object):
         self.nb_figure = self.nb_row * self.nb_col
         self.title = parameters.title
         self.anti_aliasing = parameters.anti_aliasing
+        self.refresh = parameters.update
 
         self.window.setStyleSheet("QWidget {background-color: #111111 }")
         self.window.resize(res_x, res_y)
@@ -241,27 +244,35 @@ class Window(object):
         self.window.show()
 
     def add_point(self, curve_name, x, y, has_to_plot=True):
+        """Add point to a curve"""
         # Test if curve name exist in config file
         if curve_name in self.curves.keys():
             curve = self.curves[curve_name]
 
+            """
             if x not in curve.datas:
                 curve.datas[x] = y
             else:
                 print 'curve %s already have data for time %s'\
                     % (curve_name, x)
                 exit()
+            """
+
+            curve.datas_x.append(x)
+            curve.datas_y.append(y)
 
             if has_to_plot:
+                """
                 datas_x, datas_y = self._dico_to_list(curve_name)
                 curve.plot.setData(datas_x, datas_y)
+                """
+                curve.plot.setData(curve.datas_x, curve.datas_y)
 
     def curve_display(self, curve_name):
         curve = self.curves[curve_name]
+        #datas_x, datas_y = self._dico_to_list(curve_name)
 
-        datas_x, datas_y = self._dico_to_list(curve_name)
-
-        curve.plot.setData(datas_x, datas_y)
+        curve.plot.setData(curve.datas_x, curve.datas_y)
 
     def _dico_to_list(self, curve_name):
         curve = self.curves[curve_name]
@@ -306,7 +317,7 @@ def sock_run(sock, window):
         if answer is not None:
             for name, data_x, data_y in answer:
                 window.add_point(name, float(data_x), float(data_y))
-        time.sleep(0.01)
+        time.sleep(window.refresh)
 
 
 def main():
@@ -326,9 +337,9 @@ def main():
                         help="asbcissa name\
                         (default: Time)")
 
-    parser.add_argument("-s", "--socket", dest="socket",
+    parser.add_argument("-s", "--serveur", dest="serveur",
                         default=False,
-                        help="socket address\
+                        help="serveur address\
                         (default: False)")
 
     args = parser.parse_args()
@@ -336,7 +347,7 @@ def main():
     config_file = args.config_file
     data_file_list = args.data_file_list
     abscissa = args.abscissa
-    sock_host = args.socket
+    sock_host = args.serveur
 
     # Test if configuration file exists
     if not os.path.isfile(config_file):
@@ -351,6 +362,14 @@ def main():
 
     win = Window(args.config_file)
 
+    if data_file_list:
+        # disable connection to serveur if demanded by user
+        if sock_host:
+            print 'Connection to serveur "%s" abord' % sock_host
+            print 'Cannot read csv files and connect to seveur'
+            sock_host = False
+
+    csv_dic = {}
     for data_file in data_file_list:
         dic_data = csv.DictReader(open(data_file))
 
@@ -358,17 +377,31 @@ def main():
             # Test if abscissa key exist in dic_data
             if not index:
                 if abscissa not in row:
-                    print 'ERROR : "%s" not find in File "%s"' % (abscissa, data_file)
+                    print 'ERROR : "%s" not find in File "%s"'\
+                        % (abscissa, data_file)
                     exit()
             x = float(row[abscissa])
 
             for key, value in row.items():
                 if key != abscissa:
                     y = float(value)
-                    win.add_point(key, x, y, False)
+                    cur_curve = csv_dic.setdefault(key, {})
+                    if x not in cur_curve:
+                        cur_curve.update({x: y})
+                    else:
+                        print 'Error : Curve %s already has value for time %s'\
+                            % (key, str(x))
+                        exit()
 
-        for curve in win.curves:
-            win.curve_display(curve)
+    for curve in csv_dic.keys():
+        data_x = csv_dic[curve].keys()
+        data_x.sort()
+        data_y = [csv_dic[curve][x] for x in data_x]
+        for x, y in zip(data_x, data_y):
+            win.add_point(curve, x, y, False)
+
+    for curve in win.curves:
+        win.curve_display(curve)
 
     # Test if user want socket connection
     if sock_host:
