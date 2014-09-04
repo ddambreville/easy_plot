@@ -5,9 +5,8 @@
 Created on 2014/08/08
 Last Update on 2014/08/13
 
-Author: Renaud CARRIERE
-Contact: rcarriere@presta.aldebaran-robotics.fr
 Copyright: Aldebaran Robotics 2014
+@pep8 : Complains without rules R0902, R0912, R0913, R0914, R0915 and W0212
 """
 
 DEFAULT_CONFIG_FILE = "easy_plot.cfg"
@@ -87,6 +86,7 @@ class Button(object):
         self.auto_range = 0
 
     def _update(self):
+        """Private method : Update button's connection"""
         if self.auto_scale == 0:
             self.btn1.clicked.connect(self._auto_scale_on)
         else:
@@ -140,37 +140,37 @@ class Figure(object):
         self.grid_y = grid_y
 
         # Figure graphicals parameters
-        self.pw = pg.PlotWidget(title=self.title)
+        self.p_widget = pg.PlotWidget(title=self.title)
 
         if self.min_y != None and self.max_y != None:
-            self.pw.setYRange(self.min_y, self.max_y)
+            self.p_widget.setYRange(self.min_y, self.max_y)
 
-        self.pw.setLabel('bottom', self.label_x, units=self.unit_x)
-        self.pw.setLabel('left', self.label_y, units=self.unit_y)
-        self.pw.showGrid(x=self.grid_x, y=self.grid_y)
+        self.p_widget.setLabel('bottom', self.label_x, units=self.unit_x)
+        self.p_widget.setLabel('left', self.label_y, units=self.unit_y)
+        self.p_widget.showGrid(x=self.grid_x, y=self.grid_y)
 
-        # self.pw.hideButtons()
+        # self.p_widget.hideButtons()
 
         new_row = self.row * 2
         new_col = self.column * 3
 
-        layout.addWidget(self.pw, new_row, new_col, 2, 3)
+        layout.addWidget(self.p_widget, new_row, new_col, 2, 3)
         #self.button = button(layout, new_row, new_col)
 
     def _action_button(self):
         if self.button.auto_scale == 1:
-            self.pw.enableAutoRange()
+            self.p_widget.enableAutoRange()
         else:
-            self.pw.disableAutoRange()
+            self.p_widget.disableAutoRange()
 
         if self.button.auto_range == 1:
             if len(self.curves_list) != 0:
-                self.pw.setXRange(self.curves_list[0].data_cloud_x[0] -
-                                  int(self.max_time / 2),
-                                  self.curves_list[0].data_cloud_x[0] +
-                                  int(self.max_time / 2))
+                self.p_widget.setXRange(self.curves_list[0].data_cloud_x[0] -
+                                        int(self.max_time / 2),
+                                        self.curves_list[0].data_cloud_x[0] +
+                                        int(self.max_time / 2))
             else:
-                self.pw.setXRange(0, self.max_time)
+                self.p_widget.setXRange(0, self.max_time)
         else:
             pass
 
@@ -243,38 +243,27 @@ class Window(object):
 
         self.window.show()
 
-    def add_point(self, curve_name, x, y, has_to_plot=True):
+    def add_point(self, curve_name, data_x, data_y, has_to_plot=True):
         """Add point to a curve"""
         # Test if curve name exist in config file
         if curve_name in self.curves.keys():
             curve = self.curves[curve_name]
 
-            """
-            if x not in curve.datas:
-                curve.datas[x] = y
-            else:
-                print 'curve %s already have data for time %s'\
-                    % (curve_name, x)
-                exit()
-            """
-
-            curve.datas_x.append(x)
-            curve.datas_y.append(y)
+            curve.datas_x.append(data_x)
+            curve.datas_y.append(data_y)
 
             if has_to_plot:
-                """
-                datas_x, datas_y = self._dico_to_list(curve_name)
-                curve.plot.setData(datas_x, datas_y)
-                """
                 curve.plot.setData(curve.datas_x, curve.datas_y)
 
     def curve_display(self, curve_name):
+        """Display all curves"""
         curve = self.curves[curve_name]
         #datas_x, datas_y = self._dico_to_list(curve_name)
 
         curve.plot.setData(curve.datas_x, curve.datas_y)
 
     def _dico_to_list(self, curve_name):
+        """Transform dictionnary in sorted list"""
         curve = self.curves[curve_name]
 
         datas_x = curve.datas.keys()
@@ -284,6 +273,7 @@ class Window(object):
         return datas_x, datas_y
 
     def run(self):
+        """Show main window"""
         self.app.exec_()
 
 
@@ -297,7 +287,7 @@ def wait_connection(sock, host, window):
         try:
             sock.connect((host, port))
             break
-        except (socket.error):
+        except socket.error:
             time.sleep(3)
             nb_try += 1
 
