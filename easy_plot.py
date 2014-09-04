@@ -17,6 +17,7 @@ import argparse
 import os.path
 import read_cfg
 import csv
+from re import match as rgxMatch
 
 
 try:
@@ -304,20 +305,21 @@ def main():
     win = Window(args.config_file)
 
     for data_file in data_file_list:
-        dic_data = csv.DictReader(open(data_file))
+        with open(data_file) as f:
+            dic_data = csv.DictReader(filter(lambda line: not rgxMatch('\s*#+', line), f))
 
-        for index, row in enumerate(dic_data):
-            #Test if abscissa key exist in dic_data
-            if not index:
-                if abscissa not in row:
-                    print 'ERROR : "%s" not find in File "%s"' % (abscissa, data_file)
-                    exit()
-            x = float(row[abscissa])
+            for index, row in enumerate(dic_data):
+                #Test if abscissa key exist in dic_data
+                if not index:
+                    if abscissa not in row:
+                        print 'ERROR : "%s" not find in File "%s"' % (abscissa, data_file)
+                        exit()
+                x = float(row[abscissa])
 
-            for key, value in row.items():
-                if key != abscissa:
-                    y = float(value)
-                    win.add_point(key, x, y, False)
+                for key, value in row.items():
+                    if key != abscissa:
+                        y = float(value)
+                        win.add_point(key, x, y, False)
 
         for curve in win.curves:
             win.curve_display(curve)
