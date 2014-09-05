@@ -14,6 +14,7 @@ Copyright: Aldebaran Robotics 2014
 
 DEFAULT_CONFIG_FILE = "easy_plot.cfg"
 DEFAULT_ABSCISSA = "Time"
+DEFAULT_RESOLUTION = "1920x1080"
 
 import argparse
 import os.path
@@ -402,6 +403,11 @@ def main():
                         help="asbcissa name\
                         (default: " + DEFAULT_ABSCISSA + ")")
 
+    parser.add_argument("-r", "--res", dest="resolution",
+                        default=DEFAULT_RESOLUTION,
+                        help="resolution of window\
+                        (default: " + DEFAULT_RESOLUTION + ")")
+
     parser.add_argument(
         "-p", "--printable", dest="printable", action="store_const",
         const=True, default=False,
@@ -413,19 +419,29 @@ def main():
     data_file_list = args.data_file_list
     abscissa = args.abscissa
     printable = args.printable
+    resolution = args.resolution
+
+    try:
+        (res_x, res_y) = eval(resolution.replace('x', ','))
+    except BaseException:
+        print "ERROR : Error with resolution format"
+        print "        Must be [x resolution]x[y resolution]"
+        print "        Example: 1920x1080"
+        pg.exit()
 
     # Test if configuration file exists
     if not os.path.isfile(config_file):
         print 'ERROR : File "' + config_file + '" cannot be found'
-        exit()
+        pg.exit()
 
     # Test if all data files exist
     for data_file in data_file_list:
         if not os.path.isfile(data_file):
             print 'ERROR : File "' + data_file + '" cannot be found'
-            exit()
+            pg.exit()
 
-    win = Window(config_file=args.config_file, printable=printable)
+    win = Window(config_file=args.config_file,
+                 res_x=res_x, res_y=res_y, printable=printable)
 
     for data_file in data_file_list:
         dic_data = csv.DictReader(open(data_file))
@@ -436,7 +452,7 @@ def main():
                 if abscissa not in row:
                     print 'ERROR : "%s" not find in File "%s"\
                     ' % (abscissa, data_file)
-                    exit()
+                    pg.exit()
             data_x = float(row[abscissa])
 
             for key, value in row.items():

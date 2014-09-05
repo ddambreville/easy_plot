@@ -7,7 +7,8 @@ Copyright : Aldebaran Robotics 2014
 
 Requires  : - pyqtgraph library must be install on your computer
 
-Known issues : none
+Known issue :
+    - With -p option, figures dimensions are not equal
 
 Summary : This module permit to plot datas easilier from cvs file
 
@@ -110,18 +111,28 @@ usage: python easy_plot.py [-h] [-c CONFIG_FILE] [-a ABSCISSA] [-p] [DATAFILE]
 (Note : On linux, you can replace python easy_plot.py by ./easy_plot.py)
 
 [-h] (optional) display help
+
 [-c CONFIGFILE] (optional) is to specify the path to the configuration file.
         If not specified, the default configuration file is "easy_plot.cfg".
+
 [-a ABSCISSA] (optional) define abscissa of curves. It must be the same as in
         cvs file. If not specified, the default abscissa is Time.
+
+[-r RESOLUTION] (optional) define resolution of window.
+        It must be [x resolution]x[y resolution] string.
+        For example : 1200x800
+        If not specified, the default resolution is 1920x1080.
+
 [-p] (optional) permit to run a full printable version of easy plot.
         You can print all window, and not just one figure.
         (Note: buttons are not available with this option.)
+
 [DATAFILE] is to specify the path to the cvs data file.
         A example is provided in example.cvs
 
 If you use it as an API :
-  An example will be given very soon ;-)
+  An example is given in static_example.py for static plot
+  An example is given in dynamic_example.py for dynamic plot
 
 *******************************************************************************
 
