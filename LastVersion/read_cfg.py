@@ -16,7 +16,6 @@ import tools
 
 try:
     import pyqtgraph as pg
-    import read_cfg
 except ImportError:
     print "Well that's embarrassing !"
     print "I can't find pyqtgraph on your computer. Please install pyqtgraph."
@@ -70,7 +69,7 @@ class Parameters(object):
 
         try:
             conf_dic = tools.read_config_file(config_file_path)
-        except:
+        except BaseException:
             print "Oops ! An error occured during configuration file reading"
             print "Please, check configuration file's syntaxe"
             exit()
@@ -83,12 +82,12 @@ class Parameters(object):
             try:
                 rep = "True" in general_dic["Anti-aliasing"][0]
                 self.anti_aliasing = rep
-            except:
+            except BaseException:
                 self.anti_aliasing = False
             try:
                 rep = "True" in general_dic["LinkXAll"][0]
                 self.link_x_all = rep
-            except:
+            except BaseException:
                 self.link_x_all = False
         except (IndexError, KeyError):
             print "Easy Plot configuration file MUST have a section named"
@@ -125,15 +124,46 @@ class Parameters(object):
 
         # Figures dictionnary is the configuration dictionnary without
         # [General] and [Curves] sections
-        dummy_dic = conf_dic.copy()
-        del dummy_dic[GENERAL_SECTION]
-        del dummy_dic[CURVES_SECTION]
+
+        # Curves parameters
+        def print_help():
+            """Print help"""
+            print "Easy Plot configuration file MUST have a section named"
+            print "[Curves] like the one following :"
+            print
+            print "[Curves]"
+            print "[CurveName] : [Row] [Column] [Legend] [Color]"
+            print "[CurveName] : [Row] [Column] [Legend] [Color]"
+            print "[CurveName] : [Row] [Column] [Legend] [Color]"
+            print "[CurveName] : [Row] [Column] [Legend] [Color]"
+            print "..."
+            print
+            print "where :"
+            print "- [CurveName] is the name of the curve"
+            print "- [Row] is the row number of the curve"
+            print "- [Column] is the column number of the curve"
+            print "- [Legend] is the legend of the curve"
+            print "- [Color] is the color of the curve"
+
+        try:
+            dummy_dic = conf_dic.copy()
+            del dummy_dic[GENERAL_SECTION]
+            del dummy_dic[CURVES_SECTION]
+        except KeyError:
+            print_help()
+            exit()
 
         fig_dic_descript = dummy_dic
 
         for str_name, dic_fig_caract in fig_dic_descript.items():
-            (str_num_row, str_num_column) = str_name.split("-")
-            fig_coord = (int(str_num_row), int(str_num_column))
+
+            try:
+                (str_num_row, str_num_column) = str_name.split("-")
+                fig_coord = (int(str_num_row), int(str_num_column))
+            except BaseException:
+                print "ERROR: A section name is not good"
+                print "       Please, check configuration file"
+                exit()
 
             try:
                 title = " ".join(dic_fig_caract["Title"])
@@ -166,7 +196,8 @@ class Parameters(object):
                 min_y = DEFAULT_MIN
             except (ValueError, TypeError):
                 print "ERROR : an error occured on MinY"
-                print "          in ["+str_num_row+"-"+str_num_column+"] section"
+                print "          in \
+                      [" + str_num_row + "-" + str_num_column + "] section"
                 print "          -> MinY is set to default value"
                 print
                 min_y = DEFAULT_MIN
@@ -177,7 +208,8 @@ class Parameters(object):
                 max_y = DEFAULT_MAX
             except (ValueError, TypeError):
                 print "ERROR : an error occured on MaxY"
-                print "          in ["+str_num_row+"-"+str_num_column+"] section"
+                print "          in [\
+                      " + str_num_row + "-" + str_num_column + "] section"
                 print "          -> MaxY is set to default value"
                 print
                 max_y = DEFAULT_MAX
@@ -189,7 +221,8 @@ class Parameters(object):
                 grid_x = False
             except (ValueError, TypeError):
                 print "ERROR : an error occured on GridX"
-                print "          in ["+str_num_row+"-"+str_num_column+"] section"
+                print "          in [\
+                      " + str_num_row + "-" + str_num_column + "] section"
                 print "          -> GridX is set to False"
                 print
                 grid_x = False
@@ -201,7 +234,8 @@ class Parameters(object):
                 grid_y = False
             except (ValueError, TypeError):
                 print "ERROR : an error occured on GridY"
-                print "          in ["+str_num_row+"-"+str_num_column+"] section"
+                print "          in [\
+                      " + str_num_row + "-" + str_num_column + "] section"
                 print "          -> GridY is set to False"
                 print
                 grid_y = False
@@ -209,14 +243,15 @@ class Parameters(object):
             try:
                 if self.link_x_all is False:
                     (link_row, link_col) = dic_fig_caract["Link"]
-                    link = (int(link_row),int(link_col))
+                    link = (int(link_row), int(link_col))
                 else:
                     link = None
             except (KeyError, IndexError):
                 link = None
             except (ValueError, TypeError):
                 print "ERROR : an error occured on Link"
-                print "          in ["+str_num_row+"-"+str_num_column+"] section"
+                print "          in [\
+                      " + str_num_row + "-" + str_num_column + "] section"
                 print "          -> Link is set to None"
                 print
                 link = None
@@ -226,30 +261,7 @@ class Parameters(object):
 
             self.figures[fig_coord] = figure
 
-        # Curves parameters
-        def print_help():
-            print "Easy Plot configuration file MUST have a section named"
-            print "[Curves] like the one following :"
-            print
-            print "[Curves]"
-            print "[CurveName] : [Row] [Column] [Legend] [Color]"
-            print "[CurveName] : [Row] [Column] [Legend] [Color]"
-            print "[CurveName] : [Row] [Column] [Legend] [Color]"
-            print "[CurveName] : [Row] [Column] [Legend] [Color]"
-            print "..."
-            print
-            print "where :"
-            print "- [CurveName] is the name of the curve"
-            print "- [Row] is the row number of the curve"
-            print "- [Column] is the column number of the curve"
-            print "- [Legend] is the legend of the curve"
-            print "- [Color] is the color of the curve"
-
-        try:
             dic_curves = conf_dic[CURVES_SECTION]
-        except KeyError:
-            print_help()
-            exit()
 
         for name, parameters in dic_curves.items():
             nb_parameter = len(parameters)
@@ -258,7 +270,8 @@ class Parameters(object):
                     (str_row, str_column, legend, color) = parameters
                     curve = Curve(int(str_row), int(str_column), legend, color)
                     self.curves[name] = curve
-                    color = pg.mkColor(color) #to test if color has a correct format
+                    # to test if color has a correct format
+                    color = pg.mkColor(color)
                 except (ValueError, TypeError):
                     print "There is a no valid value on [Curves] section"
                     print "Please, respect the following format :"
@@ -288,15 +301,14 @@ class Parameters(object):
                 exit()
 
 
-
-
-
 def print_configfile_struct():
+    """Print Configuration File's structure"""
 
     print "[" + GENERAL_SECTION + "]"
     print "MaxTime         : [maximum time]"
     print "Title           : [title]"
     print "Anti-aliasing   : [anti aliasing]"
+    print "LinkXAll        : [link all x axis]"
     print
     print "[[row of figure]-[column of figure]]"
     print "Title  : [title of figure]"
@@ -308,6 +320,7 @@ def print_configfile_struct():
     print "GridY  : [grid on Y]"
     print "MinY   : [minimum Value on Y]"
     print "MaxY   : [maximum Value on X]"
+    print "Link   : [row figure to link location] [col figure to link location]"
     print
     print "[[row of figure]-[column of figure]]"
     print "Title  : [title of figure]"
@@ -335,6 +348,8 @@ def print_configfile_struct():
     print "- [title] is the title of the window"
     print "- [anti aliasing] is True if you want anti aliasing to be"
     print "  applied to the window, False else"
+    print "- [link all x axis] is True if you want to link all x axis,"
+    print "  False else"
     print
     print "- [[row of figure]-[column of figure]] is the location of"
     print "  the figure on the window. For example [1-1] is the first"

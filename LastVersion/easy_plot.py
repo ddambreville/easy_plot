@@ -3,7 +3,7 @@
 
 """
 Created on 2014/08/08
-Last Update on 2014/09/04
+Last Update on 2014/09/05
 
 Author: Renaud CARRIERE
         Emmanuel NALEPA
@@ -44,12 +44,14 @@ class Button(object):
 
     def __init__(self, layout, row, column):
 
-
         self.btn1 = QtGui.QPushButton('Auto Scale: OFF')
         self.btn2 = QtGui.QPushButton('Auto Range: OFF')
 
-        style = "background-color:#121212; border:1px solid #898989; height:15px;"
-        font = QtGui.QFont("Arial",10)
+        style = "background-color:#121212; \
+                 border:1px solid #898989; \
+                 height:15px;"
+
+        font = QtGui.QFont("Arial", 10)
         font.setBold(True)
 
         self.btn1.setStyleSheet(style)
@@ -92,16 +94,18 @@ class Button(object):
         self.btn2.setText("Auto Range: OFF")
         self.auto_range = 0
 
-    def _hide_all(self):
+    def hide_all(self):
+        """Public method : Hide buttons"""
         self.btn1.hide()
         self.btn2.hide()
 
-    def _show_all(self):
+    def show_all(self):
+        """Public method : Show buttons"""
         self.btn1.show()
         self.btn2.show()
 
-    def _update(self):
-
+    def update(self):
+        """Public method : Update buttons"""
         if self.auto_scale == 0:
             self.btn1.clicked.connect(self._auto_scale_on)
         else:
@@ -137,8 +141,7 @@ class Figure(object):
 
     def __init__(self, window, row, column, max_time, title, label_x, unit_x,
                  label_y, unit_y, min_y, max_y, grid_x, grid_y,
-                 link=None, link_button=None, printable = False):
-
+                 link=None, printable=False):
 
         # Figure parameters
         self.row = row
@@ -161,64 +164,64 @@ class Figure(object):
         # Figure graphicals parameters
 
         if printable is not False:
-            self.pw = window.addPlot(title=self.title,
-                                     row=self.row-1,
-                                     col=self.column-1)
+            self.plot_widget = window.addPlot(title=self.title,
+                                              row=self.row - 1,
+                                              col=self.column - 1)
         else:
-            self.pw = pg.PlotWidget(title=self.title)
+            self.plot_widget = pg.PlotWidget(title=self.title)
 
-        self.vb = self.pw.getViewBox()
-        self.vb.register(name = self.title)
-        #self.vb.setBackgroundColor('k')
+        self.viewbox = self.plot_widget.getViewBox()
+        self.viewbox.register(name=self.title)
+        # self.viewbox.setBackgroundColor('k')
 
         if self.min_y != None and self.max_y != None:
-            self.pw.setYRange(self.min_y, self.max_y)
+            self.plot_widget.setYRange(self.min_y, self.max_y)
 
-        self.pw.setLabel('bottom', self.label_x, units=self.unit_x)
-        self.pw.setLabel('left', self.label_y, units=self.unit_y)
-        self.pw.showGrid(x=self.grid_x, y=self.grid_y)
-        self.pw.addLegend(offset=(0,1))
+        self.plot_widget.setLabel('bottom', self.label_x, units=self.unit_x)
+        self.plot_widget.setLabel('left', self.label_y, units=self.unit_y)
+        self.plot_widget.showGrid(x=self.grid_x, y=self.grid_y)
+        self.plot_widget.addLegend(offset=(0, 1))
 
         if printable is False:
             new_row = self.row * 2
             new_col = self.column * 3
 
-            window.addWidget(self.pw, new_row, new_col, 2, 3)
+            window.addWidget(self.plot_widget, new_row, new_col, 2, 3)
             self.button = Button(window, new_row, new_col)
 
     def define_link(self):
-            self.vb.linkView(axis=self.vb.XAxis, view=self.link)
+        """Public method : Define link with X axes"""
+        self.viewbox.linkView(axis=self.viewbox.XAxis, view=self.link)
 
-            if self._printable is False:
-                self.button._hide_all()
+        if self._printable is False:
+            self.button.hide_all()
 
     def unlink(self):
-            self.vb.linkView(axis=self.vb.XAxis, view=None)
+        """Public method : Remove link with X axes"""
+        self.viewbox.linkView(axis=self.viewbox.XAxis, view=None)
 
-            if self._printable is False:
-                self.button._show_all()
+        if self._printable is False:
+            self.button.show_all()
 
-    def _action_button(self):
-
+    def action_button(self):
+        """Public method : Define actions of buttons"""
         if self.button.auto_scale == 1:
-            self.pw.enableAutoRange()
+            self.plot_widget.enableAutoRange()
         else:
-            self.pw.disableAutoRange()
+            self.plot_widget.disableAutoRange()
 
         if self.button.auto_range == 1:
             if len(self.curves_list) != 0:
-                self.pw.setXRange(max(self.curves_list[0].datas.keys()) - 10,
-                                  max(self.curves_list[0].datas.keys()) + 10)
+                self.plot_widget.setXRange(
+                    max(self.curves_list[0].datas.keys()) - 10,
+                    max(self.curves_list[0].datas.keys()) + 10)
             else:
-                self.pw.setXRange(0, self.max_time)
+                self.plot_widget.setXRange(0, self.max_time)
         else:
             pass
 
         # if self.button.auto_scale == 1 or self.button.auto_range == 1:
         #     self.unlink()
-
-
-
 
 
 class Window(object):
@@ -228,7 +231,7 @@ class Window(object):
     This class permits the gestion of all the window
     """
 
-    def __init__(self, config_file, res_x=1920, res_y=1080, printable = False):
+    def __init__(self, config_file, res_x=1920, res_y=1080, printable=False):
         parameters = read_cfg.Parameters(config_file)
 
         self.app = QtGui.QApplication([])
@@ -238,11 +241,11 @@ class Window(object):
         self.anti_aliasing = parameters.anti_aliasing
         self.link_x_all = parameters.link_x_all
 
-        pg.setConfigOption('background', 'k')# #101010')
+        pg.setConfigOption('background', 'k')  # 101010')
         pg.setConfigOption('foreground', 'w')
 
         if printable is not False:
-            self.window = pg.GraphicsWindow(title = self.title, border=True)
+            self.window = pg.GraphicsWindow(title=self.title, border=True)
         else:
             self.window = QtGui.QWidget()
             self.window.setStyleSheet("QWidget {background-color: #111111 }")
@@ -250,7 +253,6 @@ class Window(object):
 
         self.window.setWindowTitle(self.title)
         self.window.resize(res_x, res_y)
-
 
         pg.setConfigOptions(antialias=self.anti_aliasing)
 
@@ -282,30 +284,36 @@ class Window(object):
                                        figure_param.grid_y,
                                        printable=printable)
 
+        viewbox_prec = None
+
         for pos, figure_param in parameters.figures.items():
             row = pos[0]
             column = pos[1]
 
-            if self.link_x_all is False :
+            if self.link_x_all is False:
                 if figure_param.link is not None:
                     try:
-                        self.figures[pos].link = self.figures[figure_param.link].vb
+                        self.figures[pos].link = self.figures[
+                            figure_param.link].viewbox
                         self.figures[pos].define_link()
-                    except:
-                        print "ERROR: Figure ("+str(row)+"-"+str(column)+") can be linked"
-                        print "       with figure "+str(figure_param.link)+" because this"
-                        print "       figure doesn't exist"
+                    except (IndexError, KeyError):
+
+                        figure1 = "[" + str(row) + "-" + str(column) + "]"
+                        figure2 = str(figure_param.link).replace(", ", "-")
+                        figure2 = figure2.replace("(", "[")
+                        figure2 = figure2.replace(")", "]")
+
+                        print "ERROR: Figure " + figure1
+                        print "       can't be linked with figure " + figure2
+                        print "       because this figure doesn't exist"
                         print "       Please, check configuration file"
+                        pg.exit()
             else:
-                try:
-                    self.figures[pos].link = vb_prec
+                if viewbox_prec is not None:
+                    self.figures[pos].link = viewbox_prec
                     self.figures[pos].define_link()
-                    self.figures[pos].button.is_link = True
-                except:
-                    pass
 
-                vb_prec = self.figures[pos].vb
-
+                viewbox_prec = self.figures[pos].viewbox
 
         # Populate the curves dictionnary
         for name, curve_param in parameters.curves.items():
@@ -315,13 +323,14 @@ class Window(object):
             try:
                 figure = self.figures[(curve_row, curve_column)]
             except KeyError:
-                print "ERROR: Curve " +name+" is define at "+str(curve_row)+" - "+str(curve_column)
+                print "ERROR: Curve " + name + " is define at\
+                      " + str(curve_row) + " - " + str(curve_column)
                 print "       but there is no figure at these coordonates"
                 print "       Please, check configuration file"
-                exit()
+                pg.exit()
 
-            plot = figure.pw.plot(pen=curve_param.color,
-                                  name=curve_param.legend)
+            plot = figure.plot_widget.plot(pen=curve_param.color,
+                                           name=curve_param.legend)
 
             curve = Curve(curve_param.legend, curve_param.color, plot)
 
@@ -332,26 +341,27 @@ class Window(object):
             self.window.setLayout(self.layout)
 
             for pos, fig in self.figures.items():
-                fig.button.timer_btn1.timeout.connect(fig.button._update)
+                fig.button.timer_btn1.timeout.connect(fig.button.update)
                 fig.button.timer_btn1.start(10)
 
-                fig.button.timer_btn2.timeout.connect(fig._action_button)
+                fig.button.timer_btn2.timeout.connect(fig.action_button)
                 fig.button.timer_btn2.start(10)
 
         self.window.show()
 
-    def add_point(self, curve_name, x, y, has_to_plot=True):
-        #Test if curve name exist in config file
+    def add_point(self, curve_name, var_x, var_y, has_to_plot=True):
+        """Public method : Test if curve name exist in config file"""
         if curve_name in self.curves.keys():
             curve = self.curves[curve_name]
 
-            curve.datas[x] = y
+            curve.datas[var_x] = var_y
 
             if has_to_plot:
                 datas_x, datas_y = self._dico_to_list(curve_name)
                 curve.plot.setData(datas_x, datas_y)
 
     def curve_display(self, curve_name):
+        """Public method : Display a curve"""
         curve = self.curves[curve_name]
 
         datas_x, datas_y = self._dico_to_list(curve_name)
@@ -359,6 +369,7 @@ class Window(object):
         curve.plot.setData(datas_x, datas_y)
 
     def _dico_to_list(self, curve_name):
+        """Private method : Put dictionnary in a list"""
         curve = self.curves[curve_name]
 
         datas_x = curve.datas.keys()
@@ -368,6 +379,7 @@ class Window(object):
         return datas_x, datas_y
 
     def run(self):
+        """Public method : Rub application"""
         if (sys.flags.interactive != 1) or not hasattr(QtCore, 'PYQT_VERSION'):
             self.app.instance().exec_()
             pg.exit()
@@ -383,19 +395,17 @@ def main():
     parser.add_argument("-c", "--configFile", dest="config_file",
                         default=DEFAULT_CONFIG_FILE,
                         help="configuration plot file\
-                        (default: "+DEFAULT_CONFIG_FILE+")")
+                        (default: " + DEFAULT_CONFIG_FILE + ")")
 
     parser.add_argument("-a", "--abscissa", dest="abscissa",
                         default=DEFAULT_ABSCISSA,
                         help="asbcissa name\
-                        (default: "+DEFAULT_ABSCISSA+")")
+                        (default: " + DEFAULT_ABSCISSA + ")")
 
-    parser.add_argument("-p", "--printable", dest="printable", action="store_const",
-                        const=True, default=False,
-                        help="add option to run printable easy_plotter")
-
-
-
+    parser.add_argument(
+        "-p", "--printable", dest="printable", action="store_const",
+        const=True, default=False,
+        help="add option to run printable easy_plotter")
 
     args = parser.parse_args()
 
@@ -415,23 +425,24 @@ def main():
             print 'ERROR : File "' + data_file + '" cannot be found'
             exit()
 
-    win = Window(config_file=args.config_file,printable=printable)
+    win = Window(config_file=args.config_file, printable=printable)
 
     for data_file in data_file_list:
         dic_data = csv.DictReader(open(data_file))
 
         for index, row in enumerate(dic_data):
-            #Test if abscissa key exist in dic_data
+            # Test if abscissa key exist in dic_data
             if not index:
                 if abscissa not in row:
-                    print 'ERROR : "%s" not find in File "%s"' % (abscissa, data_file)
+                    print 'ERROR : "%s" not find in File "%s"\
+                    ' % (abscissa, data_file)
                     exit()
-            x = float(row[abscissa])
+            data_x = float(row[abscissa])
 
             for key, value in row.items():
                 if key != abscissa:
-                    y = float(value)
-                    win.add_point(key, x, y, False)
+                    data_y = float(value)
+                    win.add_point(key, data_x, data_y, False)
 
         for curve in win.curves:
             win.curve_display(curve)
