@@ -115,8 +115,8 @@ usage: python easy_plot.py [-h] [-c CONFIG_FILE] [-a ABSCISSA] [-p] [DATAFILE]
 [-a ABSCISSA] (optional) define abscissa of curves. It must be the same as in
         cvs file. If not specified, the default abscissa is Time.
 [-p] (optional) permit to run a full printable version of easy plot.
-        You can print all window, and not just one figure. By the way,
-        buttons are not available with this option.
+        You can print all window, and not just one figure.
+        (Note: buttons are not available with this option.)
 [DATAFILE] is to specify the path to the cvs data file.
         A example is provided in example.cvs
 

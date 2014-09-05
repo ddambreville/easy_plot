@@ -340,7 +340,7 @@ class Window(object):
         if printable is False:
             self.window.setLayout(self.layout)
 
-            for pos, fig in self.figures.items():
+            for fig in self.figures.values():
                 fig.button.timer_btn1.timeout.connect(fig.button.update)
                 fig.button.timer_btn1.start(10)
 
@@ -446,6 +446,10 @@ def main():
 
         for curve in win.curves:
             win.curve_display(curve)
+
+        if printable is False:
+            for fig in win.figures.values():
+                fig.button.hide_all()
 
     win.run()
 
