@@ -12,7 +12,6 @@ class NewConnection(object):
     """Connection protocol for easy_plot"""
 
     def __init__(self, sock, serveur=None):
-        super(NewConnection, self).__init__()
         self.sock = sock
         self.dico_fonc = None
         self.generate_dico()
