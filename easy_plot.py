@@ -460,6 +460,12 @@ def main():
     resolution = args.resolution
     sock_host = args.serveur
 
+    if sock_host and data_file_list:
+        print 'Please chose plotting datas from a file OR from a server.'
+        print 'If using option "-s" or "--server", please do not specify a'
+        print 'data file to read.'
+        pg.exit()
+
     try:
         (res_x, res_y) = eval(resolution.replace('x', ','))
     except BaseException:
@@ -481,13 +487,6 @@ def main():
 
     win = Window(config_file=args.config_file, res_x=res_x, res_y=res_y,
                  printable=printable)
-
-    if data_file_list:
-        # disable connection to serveur if demanded by user
-        if sock_host:
-            print 'Connection to serveur "%s" abord' % sock_host
-            print 'Cannot read csv files and connect to seveur'
-            sock_host = False
 
     csv_dic = {}
     for data_file in data_file_list:
@@ -534,9 +533,10 @@ def main():
         thread_sock.daemon = True
         thread_sock.start()
 
-    # Hide buttons in static
-    for fig in win.figures.values():
-        fig.button.hide_all()
+    # Hide buttons if use in static
+    if not sock_host:
+        for fig in win.figures.values():
+            fig.button.hide_all()
 
     win.run()
 
