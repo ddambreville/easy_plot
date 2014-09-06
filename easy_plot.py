@@ -446,9 +446,9 @@ def main():
                         const=True, default=False,
                         help="add option to run printable easy_plotter")
 
-    parser.add_argument("-s", "--serveur", dest="serveur",
+    parser.add_argument("-s", "--server", dest="server",
                         default=False,
-                        help="serveur address\
+                        help="server address\
                         (default: False)")
 
     args = parser.parse_args()
@@ -458,9 +458,9 @@ def main():
     abscissa = args.abscissa
     printable = args.printable
     resolution = args.resolution
-    sock_host = args.serveur
+    server = args.server
 
-    if sock_host and data_file_list:
+    if server and data_file_list:
         print 'Please chose plotting datas from a file OR from a server.'
         print 'If using option "-s" or "--server", please do not specify a'
         print 'data file to read.'
@@ -523,9 +523,9 @@ def main():
         win.curve_display(curve)
 
     # Test if user want socket connection
-    if sock_host:
+    if server:
         # get ip address of host
-        host = socket.gethostbyname(sock_host)
+        host = socket.gethostbyname(server)
         # creat socket
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         thread_sock = threading.Thread(target=wait_connection,
@@ -534,7 +534,7 @@ def main():
         thread_sock.start()
 
     # Hide buttons if use in static
-    if not sock_host:
+    if not server:
         for fig in win.figures.values():
             fig.button.hide_all()
 
