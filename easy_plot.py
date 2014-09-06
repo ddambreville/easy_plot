@@ -454,9 +454,9 @@ def main():
                         const=True, default=False,
                         help="add option to run printable easy_plotter")
 
-    parser.add_argument("-s", "--server", dest="server",
+    parser.add_argument("-i", "--IP", dest="server_ip",
                         default=False,
-                        help="server address\
+                        help="server IP address\
                         (default: False)")
 
     args = parser.parse_args()
@@ -467,11 +467,11 @@ def main():
     printable = args.printable
     res_x = args.res_x
     res_y = args.res_y
-    server = args.server
+    server_ip = args.server_ip
 
-    if server and data_file_list:
+    if server_ip and data_file_list:
         print 'Please chose plotting datas from a file OR from a server.'
-        print 'If using option "-s" or "--server", please do not specify a'
+        print 'If using option "-i" or "--IP", please do not specify a'
         print 'data file to read.'
         pg.exit()
 
@@ -525,9 +525,9 @@ def main():
         win.curve_display(curve)
 
     # Plotting from socket connection
-    if server:
+    if server_ip:
         # get ip address of host
-        host = socket.gethostbyname(server)
+        host = socket.gethostbyname(server_ip)
 
         # create socket and wait for client connection in another thread
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -537,7 +537,7 @@ def main():
         thread_sock.start()
 
     # Hide buttons if plotting from CSV files
-    if not server:
+    if server_ip == None:
         for fig in win.figures.values():
             fig.button.hide_all()
 
