@@ -527,12 +527,12 @@ def main():
     # Plotting from socket connection
     if server_ip:
         # get ip address of host
-        host = socket.gethostbyname(server_ip)
+        server = socket.gethostbyname(server_ip)
 
         # create socket and wait for client connection in another thread
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         thread_sock = threading.Thread(target=wait_connection,
-                                       args=(sock, host, win))
+                                       args=(sock, server, win))
         thread_sock.daemon = True
         thread_sock.start()
 
