@@ -489,6 +489,7 @@ def main():
     win = Window(config_file=args.config_file, res_x=res_x, res_y=res_y,
                  printable=printable)
 
+    # Plotting from CSV files
     csv_dic = {}
     for data_file in data_file_list:
         dic_data = csv.DictReader(open(data_file))
@@ -523,18 +524,19 @@ def main():
     for curve in win.curves:
         win.curve_display(curve)
 
-    # Test if user want socket connection
+    # Plotting from socket connection
     if server:
         # get ip address of host
         host = socket.gethostbyname(server)
-        # creat socket
+
+        # create socket and wait for client connection in another thread
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         thread_sock = threading.Thread(target=wait_connection,
                                        args=(sock, host, win))
         thread_sock.daemon = True
         thread_sock.start()
 
-    # Hide buttons if use in static
+    # Hide buttons if plotting from CSV files
     if not server:
         for fig in win.figures.values():
             fig.button.hide_all()
