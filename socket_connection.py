@@ -9,7 +9,7 @@ import threading
 
 class NewConnection(object):
 
-    """connection protocol for easy_plot"""
+    """Connection protocol for easy_plot"""
 
     def __init__(self, sock, serveur=None):
         super(NewConnection, self).__init__()
@@ -26,7 +26,7 @@ class NewConnection(object):
             self.thread_client.start()
 
     def __del__(self):
-        """destructeur"""
+        """Destroyer"""
         self.sock.close()
         try:
             del self.queue
@@ -34,30 +34,30 @@ class NewConnection(object):
             pass
 
     def generate_dico(self):
-        """generate dico for socket connection"""
+        """Generate dictionary for socket connection"""
         self.dico_fonc = {
-            # client fonctions
-            "00": self.do_notthing,
+            # Client functions
+            "00": self.do_nothing,
             "01": self.get_data,
             "02": self.get_datas,
 
-            # serveur fonctions
+            # Server functions
             "11": self.send_data,
             "12": self.send_datas,
             "13": self.data_dispo
         }
 
     def is_data_dispo(self):
-        """send command to serveur to retrieve data"""
+        """Send command to server to retrieve data"""
         self.sock.send("13")
         return self.dico_fonc[self.sock.recv(2)]()
 
-    def do_notthing(self):
-        """ pass """
+    def do_nothing(self):
+        """Do nothing"""
         return None
 
     def data_dispo(self):
-        """serveur inform that data is dispo"""
+        """Server inform that data is available"""
         if self.first_co:
             # send datas
             self.first_co = False
@@ -70,7 +70,7 @@ class NewConnection(object):
             self.sock.send("01")
 
     def get_data(self):
-        """receve data form serveur"""
+        """Receive data form server"""
         answer_list = []
         answer = ""
         self.sock.send("11")
@@ -82,22 +82,22 @@ class NewConnection(object):
         return answer_list
 
     def send_data(self):
-        """serveur send data to client"""
+        """server send data to client"""
         while not self.queue.empty():
             self.sock.send(','.join(self.queue.get()))
             self.sock.recv(1)
         self.sock.send("end")
 
     def send_datas(self):
-        """serveur send curve"""
+        """Server sends curve"""
         pass
 
     def get_datas(self):
-        """client receve curve"""
+        """Client receive curve"""
         pass
 
     def add_queue(self, name, data_x, data_y):
-        """add Data in serveur queue"""
+        """Add Data in server queue"""
         try:
             self.queue.put((str(name), str(data_x), str(data_y)))
         except NameError:

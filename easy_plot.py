@@ -407,7 +407,7 @@ def wait_connection(sock, host, window):
 
 
 def sock_run(sock, window):
-    """allow data transfer with princial window"""
+    """Allow data transfer with princial window"""
     from socket_connection import NewConnection
     serveur = NewConnection(sock)
     while True:
