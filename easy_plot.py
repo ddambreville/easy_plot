@@ -15,7 +15,8 @@ Copyright: Aldebaran Robotics 2014
 
 DEFAULT_CONFIG_FILE = "easy_plot.cfg"
 DEFAULT_ABSCISSA = "Time"
-DEFAULT_RESOLUTION = "1920x1080"
+DEFAULT_RESOLUTION_X = 1920
+DEFAULT_RESOLUTION_Y = 1080
 DEFAULT_SOCK_PORT = 4521
 
 import argparse
@@ -233,7 +234,9 @@ class Window(object):
     This class permits the gestion of all the window
     """
 
-    def __init__(self, config_file, res_x=1920, res_y=1080, printable=False):
+    def __init__(self, config_file=DEFAULT_CONFIG_FILE,
+                 res_x=DEFAULT_RESOLUTION_X, res_y=DEFAULT_RESOLUTION_Y,
+                 printable=False):
         parameters = read_cfg.Parameters(config_file)
 
         self.app = QtGui.QApplication([])
@@ -360,7 +363,7 @@ class Window(object):
             curve.datas[var_x] = var_y
 
             if has_to_plot:
-                curve.plot.setData(curve.datas_x, curve.datas_y)
+                curve.plot.setData(curve.datas.keys(), curve.datas.values())
 
     def curve_display(self, curve_name):
         """Public method : Display a curve"""
@@ -436,10 +439,15 @@ def main():
                         help="asbcissa name\
                         (default: " + DEFAULT_ABSCISSA + ")")
 
-    parser.add_argument("-r", "--res", dest="resolution",
-                        default=DEFAULT_RESOLUTION,
-                        help="resolution of window\
-                        (default: " + DEFAULT_RESOLUTION + ")")
+    parser.add_argument("-rx", "--resolution-x", dest="res_x",
+                        default=DEFAULT_RESOLUTION_X, type=int,
+                        help="X resolution of window\
+                        (default: " + str(DEFAULT_RESOLUTION_X) + ")")
+
+    parser.add_argument("-ry", "--resolution-y", dest="res_y",
+                        default=DEFAULT_RESOLUTION_Y, type=int,
+                        help="Y resolution of window\
+                        (default: " + str(DEFAULT_RESOLUTION_Y) + ")")
 
     parser.add_argument("-p", "--printable", dest="printable",
                         action="store_const",
@@ -457,21 +465,14 @@ def main():
     data_file_list = args.data_file_list
     abscissa = args.abscissa
     printable = args.printable
-    resolution = args.resolution
+    res_x = args.res_x
+    res_y = args.res_y
     server = args.server
 
     if server and data_file_list:
         print 'Please chose plotting datas from a file OR from a server.'
         print 'If using option "-s" or "--server", please do not specify a'
         print 'data file to read.'
-        pg.exit()
-
-    try:
-        (res_x, res_y) = eval(resolution.replace('x', ','))
-    except BaseException:
-        print "ERROR : Error with resolution format"
-        print "        Must be [x resolution]x[y resolution]"
-        print "        Example: 1920x1080"
         pg.exit()
 
     # Test if configuration file exists
