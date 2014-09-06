@@ -11,12 +11,12 @@ class NewConnection(object):
 
     """Connection protocol for easy_plot"""
 
-    def __init__(self, sock, serveur=None):
+    def __init__(self, sock, server=None):
         self.sock = sock
-        self.dico_fonc = None
-        self.generate_dico()
+        self.dict_func = None
+        self.generate_dict()
 
-        if serveur is not None:
+        if server is not None:
             from Queue import Queue
             self.queue = Queue(maxsize=0)
             self.first_co = True
@@ -32,9 +32,9 @@ class NewConnection(object):
         except NameError:
             pass
 
-    def generate_dico(self):
+    def generate_dict(self):
         """Generate dictionary for socket connection"""
-        self.dico_fonc = {
+        self.dict_func = {
             # Client functions
             "00": self.do_nothing,
             "01": self.get_data,
@@ -49,7 +49,7 @@ class NewConnection(object):
     def is_data_dispo(self):
         """Send command to server to retrieve data"""
         self.sock.send("13")
-        return self.dico_fonc[self.sock.recv(2)]()
+        return self.dict_func[self.sock.recv(2)]()
 
     def do_nothing(self):
         """Do nothing"""
@@ -108,7 +108,7 @@ class NewConnection(object):
         try:
             while True:
                 fonc = self.sock.recv(1024)
-                self.dico_fonc[fonc]()
+                self.dict_func[fonc]()
         except (error, KeyError):
             # client quit
             self.__del__()
