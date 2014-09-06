@@ -78,17 +78,21 @@ class Parameters(object):
         try:
             general_dic = conf_dic[GENERAL_SECTION]
             self.max_time = int(general_dic["MaxTime"][0])
+            self.update = float(general_dic["UpdateServeur"][0])
             self.title = str(' '.join(general_dic["Title"]))
+
             try:
                 rep = "True" in general_dic["Anti-aliasing"][0]
                 self.anti_aliasing = rep
             except BaseException:
                 self.anti_aliasing = False
+
             try:
                 rep = "True" in general_dic["LinkXAll"][0]
                 self.link_x_all = rep
             except BaseException:
                 self.link_x_all = False
+
         except (IndexError, KeyError):
             print "Easy Plot configuration file MUST have a section named"
             print GENERAL_SECTION + " like the one following :"
@@ -98,6 +102,7 @@ class Parameters(object):
             print "Title           : [title]"
             print "Anti-aliasing   : [anti aliasing]"
             print "LinkXAll        : [link all x axis]"
+            print "UpdateServeur   : [refresh time]"
             print
             print "where :"
             print "- [number of rows] is the number of rows"
@@ -109,6 +114,7 @@ class Parameters(object):
             print "- [link all x axis] is True if you want to link all x axis,"
             print "  False else"
             exit()
+
         except (ValueError, TypeError):
             print "There is a no valid value on " + GENERAL_SECTION + " section"
             print "Please, respect the following format :"
@@ -118,6 +124,8 @@ class Parameters(object):
             print "- [title] is a string"
             print "- [anti aliasing] is True if you want anti aliasing to be"
             print "  applied to the window, False else"
+            print "- [UpdateServeur] is the time between two windows refresh"
+
             exit()
 
         # Figures parameters
@@ -342,8 +350,6 @@ def print_configfile_struct():
     print "..."
     print
     print "where :"
-    print "- [number of rows] is the number of rows"
-    print "- [number of columns] is the number of colums"
     print "- [maximum time] is the maximum time of each curve"
     print "- [title] is the title of the window"
     print "- [anti aliasing] is True if you want anti aliasing to be"

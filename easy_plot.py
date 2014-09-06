@@ -10,15 +10,20 @@ Author: Renaud CARRIERE
 Contact: rcarriere@aldebaran.com
          enalepa@aldebaran.com
 Copyright: Aldebaran Robotics 2014
+@pep8 : Complains without rules R0902, R0912, R0913, R0914, R0915 and W0212
 """
 
 DEFAULT_CONFIG_FILE = "easy_plot.cfg"
 DEFAULT_ABSCISSA = "Time"
 DEFAULT_RESOLUTION = "1920x1080"
+DEFAULT_SOCK_PORT = 4521
 
 import argparse
 import os.path
 import csv
+import socket
+import threading
+import time
 
 import sys
 
@@ -173,7 +178,6 @@ class Figure(object):
 
         self.viewbox = self.plot_widget.getViewBox()
         self.viewbox.register(name=self.title)
-        # self.viewbox.setBackgroundColor('k')
 
         if self.min_y != None and self.max_y != None:
             self.plot_widget.setYRange(self.min_y, self.max_y)
@@ -221,9 +225,6 @@ class Figure(object):
         else:
             pass
 
-        # if self.button.auto_scale == 1 or self.button.auto_range == 1:
-        #     self.unlink()
-
 
 class Window(object):
 
@@ -241,6 +242,7 @@ class Window(object):
         self.title = parameters.title
         self.anti_aliasing = parameters.anti_aliasing
         self.link_x_all = parameters.link_x_all
+        self.refresh = parameters.update
 
         pg.setConfigOption('background', 'k')  # 101010')
         pg.setConfigOption('foreground', 'w')
@@ -358,13 +360,11 @@ class Window(object):
             curve.datas[var_x] = var_y
 
             if has_to_plot:
-                datas_x, datas_y = self._dico_to_list(curve_name)
-                curve.plot.setData(datas_x, datas_y)
+                curve.plot.setData(curve.datas_x, curve.datas_y)
 
     def curve_display(self, curve_name):
         """Public method : Display a curve"""
         curve = self.curves[curve_name]
-
         datas_x, datas_y = self._dico_to_list(curve_name)
 
         curve.plot.setData(datas_x, datas_y)
@@ -386,11 +386,44 @@ class Window(object):
             pg.exit()
 
 
+def wait_connection(sock, host, window):
+    """Wait connection and run sock's thread"""
+    port = DEFAULT_SOCK_PORT
+    nb_try = 0
+    nb_try_max = 5
+
+    while nb_try <= nb_try_max:
+        try:
+            sock.connect((host, port))
+            break
+        except socket.error:
+            time.sleep(3)
+            nb_try += 1
+
+    if nb_try >= nb_try_max:
+        print 'Connection to host "%s" impossible' % host
+        exit()
+    sock_run(sock, window)
+
+
+def sock_run(sock, window):
+    """allow data transfer with princial window"""
+    from socket_connection import NewConnection
+    serveur = NewConnection(sock)
+    while True:
+        # Data dispo
+        answer = serveur.is_data_dispo()
+        if answer is not None:
+            for name, data_x, data_y in answer:
+                window.add_point(name, float(data_x), float(data_y))
+        time.sleep(window.refresh)
+
+
 def main():
     """Read the configuration file, the data file and plot"""
     parser = argparse.ArgumentParser(description="Plot datas from a CSV file")
 
-    parser.add_argument("data_file_list", metavar="DATAFILE", nargs="+",
+    parser.add_argument("data_file_list", metavar="DATAFILE", nargs="*",
                         help="Input CSV data files")
 
     parser.add_argument("-c", "--configFile", dest="config_file",
@@ -408,10 +441,15 @@ def main():
                         help="resolution of window\
                         (default: " + DEFAULT_RESOLUTION + ")")
 
-    parser.add_argument(
-        "-p", "--printable", dest="printable", action="store_const",
-        const=True, default=False,
-        help="add option to run printable easy_plotter")
+    parser.add_argument("-p", "--printable", dest="printable",
+                        action="store_const",
+                        const=True, default=False,
+                        help="add option to run printable easy_plotter")
+
+    parser.add_argument("-s", "--serveur", dest="serveur",
+                        default=False,
+                        help="serveur address\
+                        (default: False)")
 
     args = parser.parse_args()
 
@@ -420,6 +458,7 @@ def main():
     abscissa = args.abscissa
     printable = args.printable
     resolution = args.resolution
+    sock_host = args.serveur
 
     try:
         (res_x, res_y) = eval(resolution.replace('x', ','))
@@ -440,9 +479,17 @@ def main():
             print 'ERROR : File "' + data_file + '" cannot be found'
             pg.exit()
 
-    win = Window(config_file=args.config_file,
-                 res_x=res_x, res_y=res_y, printable=printable)
+    win = Window(config_file=args.config_file, res_x=res_x, res_y=res_y,
+                 printable=printable)
 
+    if data_file_list:
+        # disable connection to serveur if demanded by user
+        if sock_host:
+            print 'Connection to serveur "%s" abord' % sock_host
+            print 'Cannot read csv files and connect to seveur'
+            sock_host = False
+
+    csv_dic = {}
     for data_file in data_file_list:
         dic_data = csv.DictReader(open(data_file))
 
@@ -458,17 +505,40 @@ def main():
             for key, value in row.items():
                 if key != abscissa:
                     data_y = float(value)
-                    win.add_point(key, data_x, data_y, False)
+                    cur_curve = csv_dic.setdefault(key, {})
+                    if data_x not in cur_curve:
+                        cur_curve.update({data_x: data_y})
+                    else:
+                        print 'Error : Curve %s already has value for time %s'\
+                            % (key, str(data_x))
+                        exit()
 
-        for curve in win.curves:
-            win.curve_display(curve)
+    for curve in csv_dic.keys():
+        datas_x = csv_dic[curve].keys()
+        datas_x.sort()
+        datas_y = [csv_dic[curve][data_x] for data_x in datas_x]
+        for data_x, data_y in zip(datas_x, datas_y):
+            win.add_point(curve, data_x, data_y, False)
 
-        if printable is False:
-            for fig in win.figures.values():
-                fig.button.hide_all()
+    for curve in win.curves:
+        win.curve_display(curve)
+
+    # Test if user want socket connection
+    if sock_host:
+        # get ip address of host
+        host = socket.gethostbyname(sock_host)
+        # creat socket
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        thread_sock = threading.Thread(target=wait_connection,
+                                       args=(sock, host, win))
+        thread_sock.daemon = True
+        thread_sock.start()
+
+    # Hide buttons in static
+    for fig in win.figures.values():
+        fig.button.hide_all()
 
     win.run()
-
 
 if __name__ == '__main__':
     main()
