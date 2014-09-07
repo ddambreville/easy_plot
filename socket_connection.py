@@ -51,6 +51,7 @@ class Client(object):
             str_points_to_add = ""
             while str_points_to_add[-3:] != "END":
                 str_points_to_add += self.sock.recv(255)
+                str_points_to_add += self.sock.recv(1024)
 
             raw_points_to_add = str_points_to_add.split(",")
 
