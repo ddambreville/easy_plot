@@ -9,6 +9,8 @@ import time
 import socket
 
 DEFAULT_REFRESH_PERIOD = 0.1  # s
+# TODO : Find a way to specify the DEFAULT_PORT only one time
+DEFAULT_PORT = 4521
 
 # Client -> Server
 IS_DATA_AVAILABLE = "00"
@@ -24,7 +26,7 @@ class Client(object):
 
     """docstring for Client"""
 
-    def __init__(self, server_ip, port, window,
+    def __init__(self, window, server_ip, port=DEFAULT_PORT,
                  refresh_period=DEFAULT_REFRESH_PERIOD):
         self.server_ip = server_ip
         self.port = port

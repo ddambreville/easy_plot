@@ -17,7 +17,7 @@ DEFAULT_CONFIG_FILE = "easy_plot.cfg"
 DEFAULT_ABSCISSA = "Time"
 DEFAULT_RESOLUTION_X = 1920
 DEFAULT_RESOLUTION_Y = 1080
-DEFAULT_SOCK_PORT = 4521
+DEFAULT_PORT = 4521
 DEFAULT_REFRESH_PERIOD = 0.1  # s
 
 import argparse
@@ -422,6 +422,11 @@ def main():
                         help="asbcissa name\
                         (default: " + DEFAULT_ABSCISSA + ")")
 
+    parser.add_argument("-p", "--printable", dest="printable",
+                        action="store_const",
+                        const=True, default=False,
+                        help="add option to run printable easy_plotter")
+
     parser.add_argument("-rx", "--resolution-x", dest="res_x",
                         default=DEFAULT_RESOLUTION_X, type=int,
                         help="X resolution of window\
@@ -432,15 +437,13 @@ def main():
                         help="Y resolution of window\
                         (default: " + str(DEFAULT_RESOLUTION_Y) + ")")
 
-    parser.add_argument("-p", "--printable", dest="printable",
-                        action="store_const",
-                        const=True, default=False,
-                        help="add option to run printable easy_plotter")
-
     parser.add_argument("-i", "--IP", dest="server_ip",
                         default=False,
-                        help="server IP address\
-                        (default: False)")
+                        help="server IP address")
+
+    parser.add_argument("-po", "--port", dest="port", default=DEFAULT_PORT,
+                        type=int,
+                        help="server port (default: " + str(DEFAULT_PORT) + ")")
 
     parser.add_argument("-r", "--refresh-period", dest="refresh_period",
                         type=float, default=DEFAULT_REFRESH_PERIOD,
@@ -456,6 +459,7 @@ def main():
     res_x = args.res_x
     res_y = args.res_y
     server_ip = args.server_ip
+    port = args.port
     refresh_period = args.refresh_period
 
     if server_ip and data_file_list:
@@ -523,8 +527,7 @@ def main():
     # if datas are avaible and plot them
     if server_ip:
         thread = threading.Thread(target=socket_connection.Client,
-                                  args=(server_ip, DEFAULT_SOCK_PORT,
-                                        win, refresh_period))
+                                  args=(win, server_ip, port, refresh_period))
         thread.daemon = True
         thread.start()
 
