@@ -18,11 +18,12 @@ DEFAULT_ABSCISSA = "Time"
 DEFAULT_RESOLUTION_X = 1920
 DEFAULT_RESOLUTION_Y = 1080
 DEFAULT_SOCK_PORT = 4521
+DEFAULT_REFRESH_PERIOD = 0.1  # s
 
 import argparse
 import os.path
 import csv
-import socket
+import socket_connection
 import threading
 import time
 
@@ -389,26 +390,6 @@ class Window(object):
             pg.exit()
 
 
-def wait_connection(sock, host, window):
-    """Wait connection and run sock's thread"""
-    port = DEFAULT_SOCK_PORT
-    nb_try = 0
-    nb_try_max = 5
-
-    while nb_try <= nb_try_max:
-        try:
-            sock.connect((host, port))
-            break
-        except socket.error:
-            time.sleep(3)
-            nb_try += 1
-
-    if nb_try >= nb_try_max:
-        print 'Connection to host "%s" impossible' % host
-        exit()
-    sock_run(sock, window)
-
-
 def sock_run(sock, window):
     """Allow data transfer with princial window"""
     from socket_connection import NewConnection
@@ -459,6 +440,11 @@ def main():
                         help="server IP address\
                         (default: False)")
 
+    parser.add_argument("-r", "--refresh-period", dest="refresh_period",
+                        type=float, default=DEFAULT_REFRESH_PERIOD,
+                        help="refresh period for real time plot\
+                        (default: False)")
+
     args = parser.parse_args()
 
     config_file = args.config_file
@@ -468,6 +454,7 @@ def main():
     res_x = args.res_x
     res_y = args.res_y
     server_ip = args.server_ip
+    refresh_period = args.refresh_period
 
     if server_ip and data_file_list:
         print 'Please chose plotting datas from a file OR from a server.'
@@ -486,6 +473,7 @@ def main():
             print 'ERROR : File "' + data_file + '" cannot be found'
             pg.exit()
 
+    # Create the window
     win = Window(config_file=args.config_file, res_x=res_x, res_y=res_y,
                  printable=printable)
 
@@ -524,22 +512,19 @@ def main():
     for curve in win.curves:
         win.curve_display(curve)
 
-    # Plotting from socket connection
-    if server_ip:
-        # get ip address of host
-        server = socket.gethostbyname(server_ip)
-
-        # create socket and wait for client connection in another thread
-        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        thread_sock = threading.Thread(target=wait_connection,
-                                       args=(sock, server, win))
-        thread_sock.daemon = True
-        thread_sock.start()
-
-    # Hide buttons if plotting from CSV files
-    if server_ip == None:
+    # In case of plotting from CSV file(s), hide buttons
+    if not server_ip:
         for fig in win.figures.values():
             fig.button.hide_all()
+
+    # In case of plotting from a socket, begin to ask (in another thread)
+    # if datas are avaible and plot them
+    if server_ip:
+        thread = threading.Thread(target=socket_connection.Client,
+                                  args=(server_ip, DEFAULT_SOCK_PORT,
+                                        win, refresh_period))
+        thread.daemon = True
+        thread.start()
 
     win.run()
 
