@@ -394,7 +394,7 @@ class Window(object):
         return datas_x, datas_y
 
     def run(self):
-        """Public method : Rub application"""
+        """Public method : Run application"""
         if (sys.flags.interactive != 1) or not hasattr(QtCore, 'PYQT_VERSION'):
             self.app.instance().exec_()
             pg.exit()
