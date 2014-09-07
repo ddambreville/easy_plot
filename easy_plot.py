@@ -390,19 +390,6 @@ class Window(object):
             pg.exit()
 
 
-def sock_run(sock, window):
-    """Allow data transfer with princial window"""
-    from socket_connection import NewConnection
-    serveur = NewConnection(sock)
-    while True:
-        # Data dispo
-        answer = serveur.is_data_dispo()
-        if answer is not None:
-            for name, data_x, data_y in answer:
-                window.add_point(name, float(data_x), float(data_y))
-        time.sleep(window.refresh)
-
-
 def main():
     """Read the configuration file, the data file and plot"""
     parser = argparse.ArgumentParser(description="Plot datas from a CSV file")
