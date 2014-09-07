@@ -365,13 +365,23 @@ class Window(object):
 
             if has_to_plot:
                 curve.plot.setData(curve.datas.keys(), curve.datas.values())
+        else:
+            print 'ERROR : The curve "' + curve_name + '"" is not present in'
+            print "the configuration file, but a point has to be added to this"
+            print "curve."
+            pg.exit()
 
     def curve_display(self, curve_name):
         """Public method : Display a curve"""
-        curve = self.curves[curve_name]
-        datas_x, datas_y = self._dico_to_list(curve_name)
+        if curve_name in self.curves.keys():
+            curve = self.curves[curve_name]
+            datas_x, datas_y = self._dico_to_list(curve_name)
 
-        curve.plot.setData(datas_x, datas_y)
+            curve.plot.setData(datas_x, datas_y)
+        else:
+            print 'ERROR : The curve "' + curve_name + '"" is not present in'
+            print "the configuration file, but this curve hase to be displayed."
+            pg.exit()
 
     def _dico_to_list(self, curve_name):
         """Private method : Put dictionnary in a list"""
