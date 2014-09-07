@@ -41,6 +41,7 @@ class Client(object):
 
         except socket.error:
             print "ERROR : No server is found at adress " + server_ip
+            print "ERROR : No server is found at address " + server_ip
 
     def get_datas(self):
         """Retrieve datas from server"""
