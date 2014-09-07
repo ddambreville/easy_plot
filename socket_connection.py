@@ -11,12 +11,13 @@ import socket
 DEFAULT_REFRESH_PERIOD = 0.1  # s
 
 # Client -> Server
-IS_DATA_AVAILABLE = "13"
-GET_DATA = "14"
+IS_DATA_AVAILABLE = "00"
+GET_DATA = "01"
 
 # Server -> Client
-DATA_AVAILABLE = "03"
-NO_DATA_AVAILABLE = "04"
+DATA_AVAILABLE = "10"
+NO_DATA_AVAILABLE = "11"
+ERASE_CURVES = "12"
 
 
 class Client(object):
@@ -44,11 +45,12 @@ class Client(object):
 
     def get_datas(self):
         """Retrieve datas from server"""
-        while self.is_data_available():
+
+        if self.is_data_available():
             self.sock.send(GET_DATA)
 
             str_points_to_add = ""
-            while str_points_to_add[-3:] != "END":
+            while str_points_to_add[-3:] not in ("END", "RAZ"):
                 str_points_to_add += self.sock.recv(1024)
 
             raw_points_to_add = str_points_to_add.split(",")
@@ -70,6 +72,10 @@ class Client(object):
                 # Add point and don't plot
                 self.win.add_point(curve_name, data_x, data_y, False)
 
+            # Test if curves have to be erased
+            if raw_points_to_add[-1] == "RAZ":
+                self.win.curves_erase()
+
             # Plot curves
             for curve in list_curves_to_refresh:
                 self.win.curve_display(curve)
@@ -83,6 +89,9 @@ class Client(object):
             data_available = True
         elif server_answer == NO_DATA_AVAILABLE:
             data_available = False
+        elif server_answer == ERASE_CURVES:
+            self.win.curves_erase()
+            data_available = False
 
         return data_available
 
@@ -92,7 +101,12 @@ class Server(object):
     """docstring for Server"""
 
     def __init__(self, port):
+        # Contains the datas not yet plotted
         self.curves = {}
+
+        # Set to True if the server wants to erase all curves
+        self.has_to_erase_curves = False
+
         # Create socket and wait for a client connection
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
@@ -152,7 +166,11 @@ class Server(object):
         self.curves = {}
 
         # TODO : Find a better way to do this, because this is ugly !
-        string_to_send += "END"
+        if self.has_to_erase_curves:
+            self.has_to_erase_curves = False
+            string_to_send += "RAZ"
+        else:
+            string_to_send += "END"
 
         client.send(string_to_send)
 
@@ -162,3 +180,7 @@ class Server(object):
             self.curves[curve_name] = [(data_x, data_y)]
         else:
             self.curves[curve_name].append((data_x, data_y))
+
+    def curves_erase(self):
+        """Erase all curves"""
+        self.has_to_erase_curves = True

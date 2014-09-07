@@ -383,6 +383,11 @@ class Window(object):
             print "the configuration file, but this curve hase to be displayed."
             pg.exit()
 
+    def curves_erase(self):
+        """Public method : Erase all curves of the window"""
+        for curve in self.curves.values():
+            curve.datas = {}
+
     def _dico_to_list(self, curve_name):
         """Private method : Put dictionnary in a list"""
         curve = self.curves[curve_name]

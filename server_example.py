@@ -9,12 +9,16 @@ import time
 def main():
     plot_server = socket_connection.Server(4521)
 
-    t0 = time.time()
+    time_init = time.time()
     while True:
-        current_time = time.time() - t0
-        sinus = math.sin(current_time)
-        plot_server.add_point("Sinus", current_time, sinus)
-        time.sleep(0.1)
+        elapse_time = time.time() - time_init
+        if elapse_time <= 10:
+            sinus = math.sin(elapse_time)
+            plot_server.add_point("Sinus", elapse_time, sinus)
+            time.sleep(0.1)
+        else:
+            time_init = time.time()
+            plot_server.curves_erase()
 
 if __name__ == '__main__':
     main()
