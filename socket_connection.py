@@ -40,7 +40,6 @@ class Client(object):
                 time.sleep(refresh_period)
 
         except socket.error:
-            print "ERROR : No server is found at adress " + server_ip
             print "ERROR : No server is found at address " + server_ip
 
     def get_datas(self):
@@ -50,7 +49,6 @@ class Client(object):
 
             str_points_to_add = ""
             while str_points_to_add[-3:] != "END":
-                str_points_to_add += self.sock.recv(255)
                 str_points_to_add += self.sock.recv(1024)
 
             raw_points_to_add = str_points_to_add.split(",")
@@ -111,20 +109,36 @@ class Server(object):
 
     def _wait_for_client(self):
         """Wait for a client to connnect"""
-        client, address = self.sock.accept()
-
         while True:
-            # print "Wait for client query"
+            # sock.accept return a tuple of 2 elements.
+            # Only the first one is usefull
+            client = self.sock.accept()[0]
+            self._client_state_machine(client)
+
+    def _is_data_available(self, client):
+        """Check if some datas are ready to be sent to the client"""
+        # If the dictionnary id empty, there is no data to snd
+        if self.curves == {}:
+            client.send(NO_DATA_AVAILABLE)
+        # In the contrary, there is data to send
+        else:
+            client.send(DATA_AVAILABLE)
+
+    def _client_state_machine(self, client):
+        """Engage the client state machine"""
+        client_problem = False
+        while not client_problem:
             client_query = client.recv(2)
 
             if client_query == IS_DATA_AVAILABLE:
-                if self.curves == {}:
-                    client.send(NO_DATA_AVAILABLE)
-                else:
-                    client.send(DATA_AVAILABLE)
-
+                self._is_data_available(client)
             elif client_query == GET_DATA:
                 self._send_datas(client)
+            # If client is dead, the function client.recv will return a empty
+            # string. In this case, the state machine stop, and the server is
+            # waiting for another client.
+            else:
+                client_problem = True
 
     def _send_datas(self, client):
         """Send available datas to the client"""
