@@ -511,7 +511,8 @@ def main():
 
             for key, value in row.items():
                 if key != abscissa:
-                    data_y = float(value)
+                    if value is not None:
+                        data_y = float(value)
                     cur_curve = csv_dic.setdefault(key, {})
                     if data_x not in cur_curve:
                         cur_curve.update({data_x: data_y})
