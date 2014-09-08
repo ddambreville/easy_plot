@@ -33,17 +33,33 @@ class Client(object):
         self.win = window
 
         # Create socket and connect to the server
-        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-        try:
-            self.sock.connect((socket.gethostbyname(server_ip), port))
+        cpt = 0
+        continu = True
+        flag = True
 
-            while True:
-                self.get_datas()
-                time.sleep(refresh_period)
+        while continu:
+            self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            try:
+                if flag:
+                    self.sock.connect((socket.gethostbyname(server_ip), port))
+                    flag = False
 
-        except socket.error:
-            print "ERROR : No server is found at address " + server_ip
+                while True:
+                    self.get_datas()
+                    cpt = 0
+                    time.sleep(refresh_period)
+
+            except (socket.error, BaseException):
+                print "ERROR : No server is found at address " + server_ip
+                cpt += 1
+                if cpt <= 10:
+                    print "Retry: " + str(cpt) + "/10"
+                    flag = True
+                    time.sleep(2)
+                else:
+                    print "-> Stop..."
+                    continu = False
 
     def get_datas(self):
         """Retrieve datas from server"""
@@ -102,7 +118,7 @@ class Server(object):
 
     """docstring for Server"""
 
-    def __init__(self, port):
+    def __init__(self, port=DEFAULT_PORT):
         # Contains the datas not yet plotted
         self.curves = {}
 

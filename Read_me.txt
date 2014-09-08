@@ -100,16 +100,22 @@ where :
 
 _______________________________________________________________________________
 
-2) Launch easy_plotter.
+2) Launch easy_plot.
 -----------------------
 
 The easy plotter can be use as a program or as an API.
 
 If you use it as a program:
 
-usage: python easy_plot.py [-h] [-c CONFIG_FILE] [-a ABSCISSA] [-p] [DATAFILE]
+usage: python easy_plot.py [-h] [-c CONFIG_FILE] [-a ABSCISSA] [-rx RES_X]
+                    [-ry RES_Y] [-i SERVER_IP] [-po PORT] [-r REFRESH_PERIOD]
+                    [DATAFILE [DATAFILE ...]]
+
 (Note : On linux, you can replace python easy_plot.py by ./easy_plot.py)
 
+
+The following options are both for real time and static plotting:
+----------------------------------------------------------------
 [-h] (optional) display help
 
 [-c CONFIGFILE] (optional) is to specify the path to the configuration file.
@@ -118,21 +124,37 @@ usage: python easy_plot.py [-h] [-c CONFIG_FILE] [-a ABSCISSA] [-p] [DATAFILE]
 [-a ABSCISSA] (optional) define abscissa of curves. It must be the same as in
         cvs file. If not specified, the default abscissa is Time.
 
-[-r RESOLUTION] (optional) define resolution of window.
-        It must be [x resolution]x[y resolution] string.
-        For example : 1200x800
-        If not specified, the default resolution is 1920x1080.
+[-rx RESOLUTION] (optional) define resolution in x of window.
+        If not specified, the default resolution is 1920.
+
+[-ry RESOLUTION] (optional) define resolution in y of window.
+        If not specified, the default resolution is 1080.
 
 [-p] (optional) permit to run a full printable version of easy plot.
         You can print all window, and not just one figure.
         (Note: buttons are not available with this option.)
 
-[DATAFILE] is to specify the path to the cvs data file.
-        A example is provided in example.cvs
+The following options are for real time plotting only:
+------------------------------------------------------
+[-i SERVER_IP] define server IP address for real time plotting.
+        If not specified, you can't use real time plotting, and you must
+        specify [DATAFILE].
+
+[-po PORT] (optional) define server port. If not specified, the default port
+        is 4521.
+
+[-r REFRESH_PERIOD]  (optional) define the refresh period. If not specified,
+        the default refresh period is 0.1 s.
+
+
+The following option is for static plotting only:
+-------------------------------------------------
+[DATAFILE] is to specify the path to the cvs data file, if -i option is not
+        specify. A example is provided in example.cvs
+
 
 If you use it as an API :
-  An example is given in static_example.py for static plot
-  An example is given in dynamic_example.py for dynamic plot
+  An example is given in example_rt_plot.py
 
 *******************************************************************************
 

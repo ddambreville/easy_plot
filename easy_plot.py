@@ -20,12 +20,14 @@ DEFAULT_RESOLUTION_Y = 1080
 DEFAULT_PORT = 4521
 DEFAULT_REFRESH_PERIOD = 0.1  # s
 
+PERIOD_CHECK_BUTTON = 10
+
 import argparse
 import os.path
 import csv
 import socket_connection
 import threading
-import time
+#import time
 
 import sys
 
@@ -106,6 +108,8 @@ class Button(object):
         """Public method : Hide buttons"""
         self.btn1.hide()
         self.btn2.hide()
+        self._auto_scale_off()
+        self._auto_range_off()
 
     def show_all(self):
         """Public method : Show buttons"""
@@ -177,6 +181,7 @@ class Figure(object):
                                               col=self.column - 1)
         else:
             self.plot_widget = pg.PlotWidget(title=self.title)
+            self.plot_widget.setXRange(0, self.max_time)
 
         self.viewbox = self.plot_widget.getViewBox()
         self.viewbox.register(name=self.title)
@@ -218,10 +223,12 @@ class Figure(object):
             self.plot_widget.disableAutoRange()
 
         if self.button.auto_range == 1:
-            if len(self.curves_list) != 0:
+            if len(self.curves_list[0].datas.keys()) > 0 and\
+                max(self.curves_list[0].datas.keys()) >= self.max_time:
+
                 self.plot_widget.setXRange(
-                    max(self.curves_list[0].datas.keys()) - 10,
-                    max(self.curves_list[0].datas.keys()) + 10)
+                    max(self.curves_list[0].datas.keys()) - self.max_time,
+                    max(self.curves_list[0].datas.keys()))
             else:
                 self.plot_widget.setXRange(0, self.max_time)
         else:
@@ -348,16 +355,21 @@ class Window(object):
             self.window.setLayout(self.layout)
 
             for fig in self.figures.values():
+
+                if fig.link is None:
+                    fig.button.btn2.setText("Auto Range: ON")
+                    fig.button.auto_range = 1
+
                 fig.button.timer_btn1.timeout.connect(fig.button.update)
-                fig.button.timer_btn1.start(10)
+                fig.button.timer_btn1.start(PERIOD_CHECK_BUTTON)
 
                 fig.button.timer_btn2.timeout.connect(fig.action_button)
-                fig.button.timer_btn2.start(10)
+                fig.button.timer_btn2.start(PERIOD_CHECK_BUTTON)
 
         self.window.show()
 
     def add_point(self, curve_name, var_x, var_y, has_to_plot=True):
-        """Public method : Test if curve name exist in config file"""
+        """Public method : add points on curve"""
         if curve_name in self.curves.keys():
             curve = self.curves[curve_name]
 
@@ -365,23 +377,23 @@ class Window(object):
 
             if has_to_plot:
                 curve.plot.setData(curve.datas.keys(), curve.datas.values())
-        else:
-            print 'ERROR : The curve "' + curve_name + '"" is not present in'
-            print "the configuration file, but a point has to be added to this"
-            print "curve."
-            pg.exit()
+        # else:
+        #     print 'ERROR : The curve "' + curve_name + '"" is not present in'
+        #     print "the configuration file, but a point has to be added to this"
+        #     print "curve."
+        #     pg.exit()
 
     def curve_display(self, curve_name):
         """Public method : Display a curve"""
-        if curve_name in self.curves.keys():
-            curve = self.curves[curve_name]
-            datas_x, datas_y = self._dico_to_list(curve_name)
+        # if curve_name in self.curves.keys():
+        curve = self.curves[curve_name]
+        datas_x, datas_y = self._dico_to_list(curve_name)
 
-            curve.plot.setData(datas_x, datas_y)
-        else:
-            print 'ERROR : The curve "' + curve_name + '"" is not present in'
-            print "the configuration file, but this curve hase to be displayed."
-            pg.exit()
+        curve.plot.setData(datas_x, datas_y)
+        # else:
+        #     print 'ERROR : The curve "' + curve_name + '"" is not present in'
+        #     print "the configuration file, but this curve hase to be displayed."
+        #     pg.exit()
 
     def curves_erase(self):
         """Public method : Erase all curves of the window"""
@@ -438,7 +450,7 @@ def main():
                         (default: " + str(DEFAULT_RESOLUTION_Y) + ")")
 
     parser.add_argument("-i", "--IP", dest="server_ip",
-                        default=False,
+                        default=None,
                         help="server IP address")
 
     parser.add_argument("-po", "--port", dest="port", default=DEFAULT_PORT,
@@ -448,19 +460,19 @@ def main():
     parser.add_argument("-r", "--refresh-period", dest="refresh_period",
                         type=float, default=DEFAULT_REFRESH_PERIOD,
                         help="refresh period for real time plot\
-                        (default: False)")
+                        (default: 0.1s)")
 
     args = parser.parse_args()
 
     config_file = args.config_file
     data_file_list = args.data_file_list
     abscissa = args.abscissa
-    printable = args.printable
     res_x = args.res_x
     res_y = args.res_y
     server_ip = args.server_ip
     port = args.port
     refresh_period = args.refresh_period
+    printable = args.printable
 
     if server_ip and data_file_list:
         print 'Please chose plotting datas from a file OR from a server.'
@@ -525,7 +537,7 @@ def main():
 
     # In case of plotting from a socket, begin to ask (in another thread)
     # if datas are avaible and plot them
-    if server_ip:
+    if server_ip is not None:
         thread = threading.Thread(target=socket_connection.Client,
                                   args=(win, server_ip, port, refresh_period))
         thread.daemon = True
