@@ -197,26 +197,24 @@ class Parameters(object):
                 unit_y = None
 
             try:
-                min_y = int(dic_fig_caract["MinY"][0])
+                min_y = float(dic_fig_caract["MinY"][0])
             except (KeyError, IndexError):
                 min_y = DEFAULT_MIN
             except (ValueError, TypeError):
-                print "ERROR : an error occured on MinY"
-                print "          in \
-                      [" + str_num_row + "-" + str_num_column + "] section"
-                print "          -> MinY is set to default value"
+                print "ERROR : an error occured on MinY in"
+                print "   [" + str_num_row + "-" + str_num_column + "] section"
+                print "   -> MinY is set to default value"
                 print
                 min_y = DEFAULT_MIN
 
             try:
-                max_y = int(dic_fig_caract["MaxY"][0])
+                max_y = float(dic_fig_caract["MaxY"][0])
             except (KeyError, IndexError):
                 max_y = DEFAULT_MAX
             except (ValueError, TypeError):
-                print "ERROR : an error occured on MaxY"
-                print "          in [\
-                      " + str_num_row + "-" + str_num_column + "] section"
-                print "          -> MaxY is set to default value"
+                print "ERROR : an error occured on MaxY in"
+                print "   [" + str_num_row + "-" + str_num_column + "] section"
+                print "   -> MaxY is set to default value"
                 print
                 max_y = DEFAULT_MAX
 
@@ -226,10 +224,9 @@ class Parameters(object):
             except (KeyError, IndexError):
                 grid_x = False
             except (ValueError, TypeError):
-                print "ERROR : an error occured on GridX"
-                print "          in [\
-                      " + str_num_row + "-" + str_num_column + "] section"
-                print "          -> GridX is set to False"
+                print "ERROR : an error occured on GridX in"
+                print "   [" + str_num_row + "-" + str_num_column + "] section"
+                print "   -> GridX is set to False"
                 print
                 grid_x = False
 
@@ -239,10 +236,9 @@ class Parameters(object):
             except (KeyError, IndexError):
                 grid_y = False
             except (ValueError, TypeError):
-                print "ERROR : an error occured on GridY"
-                print "          in [\
-                      " + str_num_row + "-" + str_num_column + "] section"
-                print "          -> GridY is set to False"
+                print "ERROR : an error occured on GridY in"
+                print "   [" + str_num_row + "-" + str_num_column + "] section"
+                print "   -> GridY is set to False"
                 print
                 grid_y = False
 
@@ -255,10 +251,9 @@ class Parameters(object):
             except (KeyError, IndexError):
                 link = None
             except (ValueError, TypeError):
-                print "ERROR : an error occured on Link"
-                print "          in [\
-                      " + str_num_row + "-" + str_num_column + "] section"
-                print "          -> Link is set to None"
+                print "ERROR : an error occured on Link in"
+                print "   [" + str_num_row + "-" + str_num_column + "] section"
+                print "   -> Link is set to None"
                 print
                 link = None
 
