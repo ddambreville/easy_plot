@@ -78,7 +78,6 @@ class Parameters(object):
         try:
             general_dic = conf_dic[GENERAL_SECTION]
             self.max_time = int(general_dic["MaxTime"][0])
-            self.update = float(general_dic["UpdateServeur"][0])
             self.title = str(' '.join(general_dic["Title"]))
 
             try:
@@ -102,7 +101,6 @@ class Parameters(object):
             print "Title           : [title]"
             print "Anti-aliasing   : [anti aliasing]"
             print "LinkXAll        : [link all x axis]"
-            print "UpdateServeur   : [refresh time]"
             print
             print "where :"
             print "- [number of rows] is the number of rows"

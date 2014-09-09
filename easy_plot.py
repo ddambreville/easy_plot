@@ -253,7 +253,6 @@ class Window(object):
         self.title = parameters.title
         self.anti_aliasing = parameters.anti_aliasing
         self.link_x_all = parameters.link_x_all
-        self.refresh = parameters.update
 
         pg.setConfigOption('background', 'k')  # 101010')
         pg.setConfigOption('foreground', 'w')
@@ -511,8 +510,7 @@ def main():
 
             for key, value in row.items():
                 if key != abscissa:
-                    if value is not None:
-                        data_y = float(value)
+                    data_y = float(value)
                     cur_curve = csv_dic.setdefault(key, {})
                     if data_x not in cur_curve:
                         cur_curve.update({data_x: data_y})
