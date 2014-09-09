@@ -87,14 +87,14 @@ where :
 - [Column] is the column number of the curve. It corresponds on columne of
   figure you want to put the curve.
 - [Legend] is the legend of the curve
-- [Color] is the color of the curve. Must be : * r for red
-                                               * g for green
-                                               * b for blue
-                                               * c for cyan
-                                               * m for magenta
-                                               * y for yellow
-                                               * k for black
-                                               * w for white
+- [Color] is the color of the curve. Must be : * r or red
+                                               * g or green
+                                               * b or blue
+                                               * c or cyan
+                                               * m or magenta
+                                               * y or yellow
+                                               * k or black
+                                               * w or white
                                                * hexadecimal color strings;
                                                  may begin with #
 

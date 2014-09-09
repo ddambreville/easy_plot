@@ -19,7 +19,7 @@ DEFAULT_RESOLUTION_X = 1920
 DEFAULT_RESOLUTION_Y = 1080
 DEFAULT_PORT = 4521
 DEFAULT_REFRESH_PERIOD = 0.1  # s
-
+DEFAULT_TIME = 10  # s
 PERIOD_CHECK_BUTTON = 10
 
 import argparse
@@ -226,7 +226,7 @@ class Figure(object):
 
         if self.button.auto_range == 1:
             if self.max_time is None:
-                time = 10
+                time = DEFAULT_TIME
             else:
                 time = self.max_time
             if len(self.curves_list[0].datas.keys()) > 0 and\
@@ -342,8 +342,8 @@ class Window(object):
             try:
                 figure = self.figures[(curve_row, curve_column)]
             except KeyError:
-                print "ERROR: Curve " + name + " is define at\
-                      " + str(curve_row) + " - " + str(curve_column)
+                txt = "[" + str(curve_row) + "-" + str(curve_column) + "]"
+                print "ERROR: Curve " + name + " is define at " + txt
                 print "       but there is no figure at these coordonates"
                 print "       Please, check configuration file"
                 pg.exit()
