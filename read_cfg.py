@@ -276,10 +276,18 @@ class Parameters(object):
             nb_parameter = len(parameters)
             if nb_parameter >= 4:
                 try:
+
+                    dic_color = {'red': 'r', 'green': 'g', 'blue': 'b',
+                                 'cyan': 'c', 'magenta': 'm', 'yellow': 'y',
+                                 'black': 'k', 'white': 'w'}
+
                     str_row = parameters[0]
                     str_column = parameters[1]
                     legend = str(' '.join(parameters[2:-1]))
                     color = parameters[-1]
+
+                    if len(color) > 1 and color[0] is not '#':
+                        color = dic_color[color]
 
                     # to test if color has a correct format
                     color = pg.mkColor(color)
@@ -287,7 +295,7 @@ class Parameters(object):
                     curve = Curve(int(str_row), int(str_column), legend, color)
                     self.curves[name] = curve
 
-                except (ValueError, TypeError):
+                except (ValueError, TypeError, KeyError):
                     print "There is a no valid value on [Curves] section"
                     print "Please, respect the following format :"
                     print
