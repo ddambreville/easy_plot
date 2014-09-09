@@ -536,7 +536,7 @@ def main():
         win.curve_display(curve)
 
     # In case of plotting from CSV file(s), hide buttons
-    if not server_ip:
+    if not server_ip and printable is False:
         for fig in win.figures.values():
             fig.button.hide_all()
 
