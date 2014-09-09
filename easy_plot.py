@@ -181,7 +181,9 @@ class Figure(object):
                                               col=self.column - 1)
         else:
             self.plot_widget = pg.PlotWidget(title=self.title)
-            self.plot_widget.setXRange(0, self.max_time)
+
+            if self.max_time is not None:
+                self.plot_widget.setXRange(0, self.max_time)
 
         self.viewbox = self.plot_widget.getViewBox()
         self.viewbox.register(name=self.title)
@@ -223,14 +225,18 @@ class Figure(object):
             self.plot_widget.disableAutoRange()
 
         if self.button.auto_range == 1:
+            if self.max_time is None:
+                time = 10
+            else:
+                time = self.max_time
             if len(self.curves_list[0].datas.keys()) > 0 and\
-                max(self.curves_list[0].datas.keys()) >= self.max_time:
+                max(self.curves_list[0].datas.keys()) >= time:
 
                 self.plot_widget.setXRange(
-                    max(self.curves_list[0].datas.keys()) - self.max_time,
+                    max(self.curves_list[0].datas.keys()) - time,
                     max(self.curves_list[0].datas.keys()))
             else:
-                self.plot_widget.setXRange(0, self.max_time)
+                self.plot_widget.setXRange(0, time)
         else:
             pass
 

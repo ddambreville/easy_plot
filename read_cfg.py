@@ -77,8 +77,16 @@ class Parameters(object):
         # General parameters
         try:
             general_dic = conf_dic[GENERAL_SECTION]
-            self.max_time = int(general_dic["MaxTime"][0])
-            self.title = str(' '.join(general_dic["Title"]))
+
+            try:
+                self.max_time = int(general_dic["MaxTime"][0])
+            except BaseException:
+                self.max_time = None
+
+            try:
+                self.title = str(' '.join(general_dic["Title"]))
+            except BaseException:
+                self.title = None
 
             try:
                 rep = "True" in general_dic["Anti-aliasing"][0]
