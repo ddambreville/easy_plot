@@ -250,7 +250,7 @@ class Window(object):
 
     def __init__(self, config_file=DEFAULT_CONFIG_FILE,
                  res_x=DEFAULT_RESOLUTION_X, res_y=DEFAULT_RESOLUTION_Y,
-                 printable=False):
+                 printable=False, is_rt=False):
         parameters = read_cfg.Parameters(config_file)
 
         self.app = QtGui.QApplication([])
@@ -259,6 +259,8 @@ class Window(object):
         self.title = parameters.title
         self.anti_aliasing = parameters.anti_aliasing
         self.link_x_all = parameters.link_x_all
+        self.printable = printable
+        self.is_rt = is_rt
 
         pg.setConfigOption('background', 'k')  # 101010')
         pg.setConfigOption('foreground', 'w')
@@ -356,7 +358,7 @@ class Window(object):
             self.curves[name] = curve
             self.figures[(curve_row, curve_column)].curves_list.append(curve)
 
-        if printable is False:
+        if self.printable is False:
             self.window.setLayout(self.layout)
 
             for fig in self.figures.values():
@@ -373,6 +375,14 @@ class Window(object):
 
         self.window.show()
 
+    def _print_error(self, curve_name):
+        """Print Error in case of curve name problem with rt plot """
+        if self.is_rt is True:
+            print 'ERROR : The curve "' + curve_name + '"" is not present in'
+            print "the configuration file, but a point has to be added to this"
+            print "curve."
+            pg.exit()
+
     def add_point(self, curve_name, var_x, var_y, has_to_plot=True):
         """Public method : add points on curve"""
         if curve_name in self.curves.keys():
@@ -382,23 +392,18 @@ class Window(object):
 
             if has_to_plot:
                 curve.plot.setData(curve.datas.keys(), curve.datas.values())
-        # else:
-        #     print 'ERROR : The curve "' + curve_name + '"" is not present in'
-        #     print "the configuration file, but a point has to be added to this"
-        #     print "curve."
-        #     pg.exit()
+        else:
+            self._print_error(curve_name)
 
     def curve_display(self, curve_name):
         """Public method : Display a curve"""
-        # if curve_name in self.curves.keys():
-        curve = self.curves[curve_name]
-        datas_x, datas_y = self._dico_to_list(curve_name)
+        if curve_name in self.curves.keys():
+            curve = self.curves[curve_name]
+            datas_x, datas_y = self._dico_to_list(curve_name)
 
-        curve.plot.setData(datas_x, datas_y)
-        # else:
-        #     print 'ERROR : The curve "' + curve_name + '"" is not present in'
-        #     print "the configuration file, but this curve hase to be displayed."
-        #     pg.exit()
+            curve.plot.setData(datas_x, datas_y)
+        else:
+            self._print_error(curve_name)
 
     def curves_erase(self):
         """Public method : Erase all curves of the window"""
@@ -419,6 +424,7 @@ class Window(object):
         """Public method : Run application"""
         if (sys.flags.interactive != 1) or not hasattr(QtCore, 'PYQT_VERSION'):
             self.app.instance().exec_()
+            print
             pg.exit()
 
 
@@ -499,6 +505,9 @@ def main():
     # Create the window
     win = Window(config_file=args.config_file, res_x=res_x, res_y=res_y,
                  printable=printable)
+
+    if server_ip is not None:
+        win.is_rt = True
 
     # Plotting from CSV files
     csv_dic = {}
