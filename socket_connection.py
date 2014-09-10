@@ -7,6 +7,7 @@ Communication protocol for easy_plot
 import threading
 import time
 import socket
+import sys
 
 DEFAULT_REFRESH_PERIOD = 0.1  # s
 # TODO : Find a way to specify the DEFAULT_PORT only one time
@@ -15,6 +16,9 @@ DEFAULT_PORT = 4521
 # Client -> Server
 IS_DATA_AVAILABLE = "00"
 GET_DATA = "01"
+
+TRY_LOST_CONNEXION = 10
+TIME_BETWEEN_TRY = 2  # s
 
 # Server -> Client
 DATA_AVAILABLE = "10"
@@ -37,12 +41,15 @@ class Client(object):
         cpt = 0
         continu = True
         flag = True
+        flag_print = True
 
         while continu:
             self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             try:
-                if flag:
+                if flag is True:
                     self.sock.connect((socket.gethostbyname(server_ip), port))
+                    print "\nConnexion with " + server_ip + " etablished"
+                    flag_print = True
                     flag = False
 
                 while True:
@@ -51,14 +58,23 @@ class Client(object):
                     time.sleep(refresh_period)
 
             except (socket.error, BaseException):
-                print "ERROR : No server is found at address " + server_ip
+                if flag_print is True:
+                    if flag is False:
+                        sys.stdout.write(
+                            "ERROR : Server " + server_ip + " is lost ")
+                    else:
+                        sys.stdout.write(
+                            "ERROR : Can't connect with " + server_ip + " ")
+                    flag_print = False
                 cpt += 1
-                if cpt <= 10:
-                    print "Retry: " + str(cpt) + "/10"
+
+                if cpt <= TRY_LOST_CONNEXION:
+                    sys.stdout.write(".")
+                    sys.stdout.flush()
                     flag = True
-                    time.sleep(2)
+                    time.sleep(TIME_BETWEEN_TRY)
                 else:
-                    print "-> Stop..."
+                    print "\nTIME OUT"
                     continu = False
 
     def get_datas(self):
