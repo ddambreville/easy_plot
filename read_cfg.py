@@ -281,16 +281,28 @@ class Parameters(object):
                                  'cyan': 'c', 'magenta': 'm', 'yellow': 'y',
                                  'black': 'k', 'white': 'w'}
 
+                    try:
+                        test_param = parameters[-1]
+                        test_param = int(test_param)
+                        pos_color = -2
+                    except (ValueError, TypeError):
+                        pos_color = -1
+
                     str_row = parameters[0]
                     str_column = parameters[1]
-                    legend = str(' '.join(parameters[2:-1]))
-                    color = parameters[-1]
+                    legend = str(' '.join(parameters[2:pos_color]))
+                    color = parameters[pos_color]
+
+                    if pos_color == -2:
+                        width = parameters[-1]
+                    else:
+                        width = 1
 
                     if len(color) > 1 and color[0] is not '#':
                         color = dic_color[color]
 
                     # to test if color has a correct format
-                    color = pg.mkColor(color)
+                    color = pg.mkPen(color=color, width=int(width))
 
                     curve = Curve(int(str_row), int(str_column), legend, color)
                     self.curves[name] = curve
@@ -299,7 +311,7 @@ class Parameters(object):
                     print "There is a no valid value on [Curves] section"
                     print "Please, respect the following format :"
                     print
-                    print " [CurveName] : [Row] [Column] [Legend] [Color]"
+                    print "[CurveName]: [Row] [Column] [Legend] [Color] [Width]"
                     print
                     print "where:"
                     print "- [CurveName] is a string"
@@ -317,6 +329,7 @@ class Parameters(object):
                     print "          w or white"
                     print "          (R, G, B, [A]) tuple of integers 0-255"
                     print "          hexadecimal strings; may begin with #"
+                    print "- [Width] is an integer"
                     exit()
 
             else:
