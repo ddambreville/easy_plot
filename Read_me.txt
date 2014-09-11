@@ -58,8 +58,8 @@ Link   : [row figure to link location] [col figure to link location]
 ...
 
 [Curves]
-[CurveName] : [Row] [Column] [Legend] [Color]
-[CurveName] : [Row] [Column] [Legend] [Color]
+[CurveName] : [Row] [Column] [Legend] [Color] [Width]
+[CurveName] : [Row] [Column] [Legend] [Color] [Width]
 ...
 
 where :
@@ -97,6 +97,7 @@ where :
                                                * w or white
                                                * hexadecimal color strings;
                                                  may begin with #
+- [Width] is the size of the curve. If not specified, the default width is 1
 
 _______________________________________________________________________________
 
