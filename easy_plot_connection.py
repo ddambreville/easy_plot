@@ -148,9 +148,14 @@ class Server(object):
             self.ip_adress = "127.0.0.1"
         else:
             try:
-                self.ip_adress = socket.gethostbyname(self.hostname + ".local")
+                try:
+                    self.ip_adress = socket.gethostbyname(
+                        self.hostname + ".local")
+                except socket.gaierror:
+                    self.ip_adress = socket.gethostbyname(self.hostname)
             except socket.gaierror:
-                print "ERROR"
+                print "ERROR: Impossible to get host with " + self.hostname
+                print "       or " + self.hostname + ".local"
                 exit()
 
         print self.hostname + " send datas at " + self.ip_adress
