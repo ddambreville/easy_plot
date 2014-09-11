@@ -525,7 +525,16 @@ def main():
 
             for key, value in row.items():
                 if key != abscissa:
-                    data_y = float(value)
+                    if value is not None:
+                        try:
+                            data_y = float(value)
+                        except (TypeError, ValueError):
+                            print "ERROR: " + str(value) + " in " + str(key)
+                            print "       is not a number"
+                            pg.exit()
+                    else:
+                        print "WARNING: None Value in " + str(key) + " set to 0"
+                        data_y = 0
                     cur_curve = csv_dic.setdefault(key, {})
                     if data_x not in cur_curve:
                         cur_curve.update({data_x: data_y})
