@@ -12,14 +12,26 @@ Contact: rcarriere@aldebaran.com
 Copyright: Aldebaran Robotics 2014
 """
 
-import socket_connection
+import argparse
+import easy_plot_connection
 import math
 import time
 
 
 def main():
     """Plot sinus, cosinus, droite, square and erase them every 10 seconds"""
-    plot_server = socket_connection.Server(4521)
+
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument("-l", "--local", dest="local",
+                        action="store_const",
+                        const=True, default=False,
+                        help="add option if server is local")
+
+    args = parser.parse_args()
+    local = args.local
+
+    plot_server = easy_plot_connection.Server(local_plot=local)
 
     time_init = time.time()
     while True:

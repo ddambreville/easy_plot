@@ -25,7 +25,7 @@ PERIOD_CHECK_BUTTON = 10
 import argparse
 import os.path
 import csv
-import socket_connection
+import easy_plot_connection
 import threading
 #import time
 
@@ -552,7 +552,7 @@ def main():
     # In case of plotting from a socket, begin to ask (in another thread)
     # if datas are avaible and plot them
     if server_ip is not None:
-        thread = threading.Thread(target=socket_connection.Client,
+        thread = threading.Thread(target=easy_plot_connection.Client,
                                   args=(win, server_ip, port, refresh_period))
         thread.daemon = True
         thread.start()

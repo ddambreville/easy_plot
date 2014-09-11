@@ -122,7 +122,8 @@ The following options are both for real time and static plotting:
         If not specified, the default configuration file is "easy_plot.cfg".
 
 [-a ABSCISSA] (optional) define abscissa of curves. It must be the same as in
-        cvs file. If not specified, the default abscissa is Time.
+        cvs file. If not specified, the default abscissa is Time
+        (note : if you use time instead of Time, you have to specify it).
 
 [-rx RESOLUTION] (optional) define resolution in x of window.
         If not specified, the default resolution is 1920.
