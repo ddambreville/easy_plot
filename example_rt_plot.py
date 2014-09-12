@@ -31,13 +31,13 @@ def main():
     args = parser.parse_args()
     local = args.local
 
-    plot_server = easy_plot_connection.Server(local_plot=local)
+    plot_server = easy_plot_connection.Server(
+        local_plot=local, max_points=100)
 
     time_init = time.time()
     while True:
         elapsed_time = time.time() - time_init
         if elapsed_time <= 10:
-
             sinus = math.sin(elapsed_time)
             cosinus = math.cos(elapsed_time)
             droite = 2 * elapsed_time - 4

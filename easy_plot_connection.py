@@ -130,9 +130,10 @@ class Server(object):
 
     """docstring for Server"""
 
-    def __init__(self, port=DEFAULT_PORT, local_plot=False):
+    def __init__(self, port=DEFAULT_PORT, local_plot=False, max_points=100000):
         # Contains the datas not yet plotted
         self.curves = {}
+        self.max_points = max_points
 
         # Set to True if the server wants to erase all curves
         self.has_to_erase_curves = False
@@ -230,7 +231,14 @@ class Server(object):
             self.curves[curve_name] = [(data_x, data_y)]
         else:
             self.curves[curve_name].append((data_x, data_y))
+            self.curves_limitation()
 
     def curves_erase(self):
         """Erase all curves"""
         self.has_to_erase_curves = True
+
+    def curves_limitation(self):
+        """Limit number of curves to save RAM"""
+        for keys in self.curves.keys():
+            if len(self.curves[keys]) > self.max_points:
+                self.curves[keys].pop(0)
