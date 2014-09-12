@@ -3,7 +3,7 @@
 
 """
 Created on 2014/08/08
-Last Update on 2014/09/05
+Last Update on 2014/09/12
 
 Author: Renaud CARRIERE
         Emmanuel NALEPA
@@ -229,6 +229,7 @@ class Figure(object):
                 time = DEFAULT_TIME
             else:
                 time = self.max_time
+            # print self.curves_list[0].datas.keys()
             if len(self.curves_list[0].datas.keys()) > 0 and\
                 max(self.curves_list[0].datas.keys()) >= time:
 
@@ -257,6 +258,9 @@ class Window(object):
 
         self.max_time = parameters.max_time
         self.title = parameters.title
+        self.abscissa = parameters.abscissa
+        self.label_x = parameters.label_x
+        self.unit_x = parameters.unit_x
         self.anti_aliasing = parameters.anti_aliasing
         self.link_x_all = parameters.link_x_all
         self.printable = printable
@@ -295,8 +299,8 @@ class Window(object):
 
             self.figures[pos] = Figure(win, row, column, self.max_time,
                                        figure_param.title,
-                                       figure_param.label_x,
-                                       figure_param.unit_x,
+                                       self.label_x,
+                                       self.unit_x,
                                        figure_param.label_y,
                                        figure_param.unit_y,
                                        figure_param.min_y,
@@ -440,11 +444,6 @@ def main():
                         help="configuration plot file\
                         (default: " + DEFAULT_CONFIG_FILE + ")")
 
-    parser.add_argument("-a", "--abscissa", dest="abscissa",
-                        default=DEFAULT_ABSCISSA,
-                        help="asbcissa name\
-                        (default: " + DEFAULT_ABSCISSA + ")")
-
     parser.add_argument("-p", "--printable", dest="printable",
                         action="store_const",
                         const=True, default=False,
@@ -477,7 +476,6 @@ def main():
 
     config_file = args.config_file
     data_file_list = args.data_file_list
-    abscissa = args.abscissa
     res_x = args.res_x
     res_y = args.res_y
     server_ip = args.server_ip
@@ -505,6 +503,8 @@ def main():
     # Create the window
     win = Window(config_file=args.config_file, res_x=res_x, res_y=res_y,
                  printable=printable)
+
+    abscissa = win.abscissa
 
     if server_ip is not None:
         win.is_rt = True

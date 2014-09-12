@@ -2,6 +2,16 @@
 # -*- coding: utf-8 -*-
 """
 Communication protocol for easy_plot
+
+Last Update on 2014/09/12
+
+Author:  Jason LETORT
+         Emmanuel NALEPA
+         Renaud CARRIERE
+Contact: jletort@presta.aldebaran-robotics.fr
+         enalepa@aldebaran.com
+         rcarriere@aldebaran.com
+Copyright: Aldebaran Robotics 2014
 """
 
 import threading

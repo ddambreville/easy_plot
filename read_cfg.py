@@ -45,12 +45,10 @@ class Figure(object):
 
     """This class describes a figure"""
 
-    def __init__(self, title, label_x, label_y, unit_x, unit_y, min_y, max_y,
+    def __init__(self, title, label_y, unit_y, min_y, max_y,
                  grid_x, grid_y, link):
         self.title = title
-        self.label_x = label_x
         self.label_y = label_y
-        self.unit_x = unit_x
         self.unit_y = unit_y
         self.min_y = min_y
         self.max_y = max_y
@@ -92,13 +90,28 @@ class Parameters(object):
                 rep = "True" in general_dic["Anti-aliasing"][0]
                 self.anti_aliasing = rep
             except BaseException:
-                self.anti_aliasing = False
+                self.anti_aliasing = True
 
             try:
                 rep = "True" in general_dic["LinkXAll"][0]
                 self.link_x_all = rep
             except BaseException:
                 self.link_x_all = False
+
+            try:
+                self.abscissa = " ".join(general_dic["Abscissa"])
+            except (KeyError, IndexError):
+                self.abscissa = "Time"
+
+            try:
+                self.label_x = " ".join(general_dic["LabelX"])
+            except (KeyError, IndexError):
+                self.label_x = self.abscissa
+
+            try:
+                self.unit_x = " ".join(general_dic["UnitX"])
+            except (KeyError, IndexError):
+                self.unit_x = None
 
         except (IndexError, KeyError):
             print "Easy Plot configuration file MUST have a section named"
@@ -107,6 +120,9 @@ class Parameters(object):
             print "[" + GENERAL_SECTION + "]"
             print "MaxTime         : [maximum time]"
             print "Title           : [title]"
+            print "Abscissa        : [abscissa]"
+            print "LabelX          : [label of x axis]"
+            print "UnitX           : [unit of x axis]"
             print "Anti-aliasing   : [anti aliasing]"
             print "LinkXAll        : [link all x axis]"
             print
@@ -115,6 +131,9 @@ class Parameters(object):
             print "- [number of columns] is the number of colums"
             print "- [maximum time] is the maximum time of each curve"
             print "- [title] is the title of the window"
+            print "- [abscissa] is the name of abscissa in cvs file"
+            print "- [label of x axis] is the label of x axis"
+            print "- [unit of x axis] is the unit of x axis"
             print "- [anti aliasing] is True if you want anti aliasing to be"
             print "  applied to the window, False else"
             print "- [link all x axis] is True if you want to link all x axis,"
@@ -128,6 +147,9 @@ class Parameters(object):
             print "- [number of columns] is an integer"
             print "- [maximum time] is an integer"
             print "- [title] is a string"
+            print "- [abscissa] is a string"
+            print "- [label of x axis] is a string"
+            print "- [unit of x axis] is a string"
             print "- [anti aliasing] is True if you want anti aliasing to be"
             print "  applied to the window, False else"
             print "- [UpdateServeur] is the time between two windows refresh"
@@ -185,19 +207,9 @@ class Parameters(object):
                 title = None
 
             try:
-                label_x = " ".join(dic_fig_caract["LabelX"])
-            except (KeyError, IndexError):
-                label_x = None
-
-            try:
                 label_y = " ".join(dic_fig_caract["LabelY"])
             except (KeyError, IndexError):
                 label_y = None
-
-            try:
-                unit_x = " ".join(dic_fig_caract["UnitX"])
-            except (KeyError, IndexError):
-                unit_x = None
 
             try:
                 unit_y = " ".join(dic_fig_caract["UnitY"])
@@ -252,20 +264,20 @@ class Parameters(object):
 
             try:
                 if self.link_x_all is False:
-                    (link_row, link_col) = dic_fig_caract["Link"]
+                    (link_row, link_col) = dic_fig_caract["LinkX"]
                     link = (int(link_row), int(link_col))
                 else:
                     link = None
             except (KeyError, IndexError):
                 link = None
             except (ValueError, TypeError):
-                print "ERROR : an error occured on Link in"
+                print "ERROR : an error occured on LinkX in"
                 print "   [" + str_num_row + "-" + str_num_column + "] section"
-                print "   -> Link is set to None"
+                print "   -> LinkX is set to None"
                 print
                 link = None
 
-            figure = Figure(title, label_x, label_y, unit_x, unit_y, min_y,
+            figure = Figure(title, label_y, unit_y, min_y,
                             max_y, grid_x, grid_y, link)
 
             self.figures[fig_coord] = figure
@@ -337,70 +349,70 @@ class Parameters(object):
                 exit()
 
 
-def print_configfile_struct():
-    """Print Configuration File's structure"""
+# def print_configfile_struct():
+#     """Print Configuration File's structure"""
 
-    print "[" + GENERAL_SECTION + "]"
-    print "MaxTime         : [maximum time]"
-    print "Title           : [title]"
-    print "Anti-aliasing   : [anti aliasing]"
-    print "LinkXAll        : [link all x axis]"
-    print
-    print "[[row of figure]-[column of figure]]"
-    print "Title  : [title of figure]"
-    print "LabelX : [label on X axis]"
-    print "UnitX  : [unit of X axis]"
-    print "LabelY : [label on Y axis]"
-    print "UnitY  : [unit on Y axis]"
-    print "GridX  : [grid on X]"
-    print "GridY  : [grid on Y]"
-    print "MinY   : [minimum Value on Y]"
-    print "MaxY   : [maximum Value on X]"
-    print "Link   : [row figure to link location] [col figure to link location]"
-    print
-    print "[[row of figure]-[column of figure]]"
-    print "Title  : [title of figure]"
-    print "LabelX : [label on X axis]"
-    print "UnitX  : [unit of X axis]"
-    print "LabelY : [label on Y axis]"
-    print "UnitY  : [unit on Y axis]"
-    print "GridX  : [grid on X]"
-    print "GridY  : [grid on Y]"
-    print "MinY   : [minimum Value on Y]"
-    print "MaxY   : [maximum Value on Y]"
-    print "Link   : [row figure to link location] [col figure to link location]"
-    print
-    print "..."
-    print
-    print "[Curves]"
-    print "[CurveName] : [Row] [Column] [Legend] [Color]"
-    print "[CurveName] : [Row] [Column] [Legend] [Color]"
-    print "..."
-    print
-    print "where :"
-    print "- [maximum time] is the maximum time of each curve"
-    print "- [title] is the title of the window"
-    print "- [anti aliasing] is True if you want anti aliasing to be"
-    print "  applied to the window, False else"
-    print "- [link all x axis] is True if you want to link all x axis,"
-    print "  False else"
-    print
-    print "- [[row of figure]-[column of figure]] is the location of"
-    print "  the figure on the window. For example [1-1] is the first"
-    print "  figure"
-    print "- [title of figure] is the title of the figure"
-    print "- [label on X axis] is the label on the X axis"
-    print "- [unit of X axis] is the unity of data on the X axis"
-    print "- [label on Y axis] is the label on the Y axis"
-    print "- [unit on Y axis] is the unity of data on the Y axis"
-    print "- [grid on X] is True if you want grid on X axis, False else"
-    print "- [grid on Y] is True if you want grid on Y axis, False else"
-    print "- [minimum Value on Y] is the minimum value of Y axis"
-    print "- [maximum Value on Y] is the maximum value of Y axis"
-    print "- [figure to link location] is the coordonate of figure to link"
-    print
-    print "- [CurveName] is the name of the curve"
-    print "- [Row] is the row number of the curve"
-    print "- [Column] is the column number of the curve"
-    print "- [Legend] is the legend of the curve"
-    print "- [Color] is the color of the curve"
+#     print "[" + GENERAL_SECTION + "]"
+#     print "MaxTime         : [maximum time]"
+#     print "Title           : [title]"
+#     print "Anti-aliasing   : [anti aliasing]"
+#     print "LinkXAll        : [link all x axis]"
+#     print
+#     print "[[row of figure]-[column of figure]]"
+#     print "Title  : [title of figure]"
+#     print "LabelX : [label on X axis]"
+#     print "UnitX  : [unit of X axis]"
+#     print "LabelY : [label on Y axis]"
+#     print "UnitY  : [unit on Y axis]"
+#     print "GridX  : [grid on X]"
+#     print "GridY  : [grid on Y]"
+#     print "MinY   : [minimum Value on Y]"
+#     print "MaxY   : [maximum Value on X]"
+#     print "Link   : [row figure to link location] [col figure to link location]"
+#     print
+#     print "[[row of figure]-[column of figure]]"
+#     print "Title  : [title of figure]"
+#     print "LabelX : [label on X axis]"
+#     print "UnitX  : [unit of X axis]"
+#     print "LabelY : [label on Y axis]"
+#     print "UnitY  : [unit on Y axis]"
+#     print "GridX  : [grid on X]"
+#     print "GridY  : [grid on Y]"
+#     print "MinY   : [minimum Value on Y]"
+#     print "MaxY   : [maximum Value on Y]"
+#     print "Link   : [row figure to link location] [col figure to link location]"
+#     print
+#     print "..."
+#     print
+#     print "[Curves]"
+#     print "[CurveName] : [Row] [Column] [Legend] [Color]"
+#     print "[CurveName] : [Row] [Column] [Legend] [Color]"
+#     print "..."
+#     print
+#     print "where :"
+#     print "- [maximum time] is the maximum time of each curve"
+#     print "- [title] is the title of the window"
+#     print "- [anti aliasing] is True if you want anti aliasing to be"
+#     print "  applied to the window, False else"
+#     print "- [link all x axis] is True if you want to link all x axis,"
+#     print "  False else"
+#     print
+#     print "- [[row of figure]-[column of figure]] is the location of"
+#     print "  the figure on the window. For example [1-1] is the first"
+#     print "  figure"
+#     print "- [title of figure] is the title of the figure"
+#     print "- [label on X axis] is the label on the X axis"
+#     print "- [unit of X axis] is the unity of data on the X axis"
+#     print "- [label on Y axis] is the label on the Y axis"
+#     print "- [unit on Y axis] is the unity of data on the Y axis"
+#     print "- [grid on X] is True if you want grid on X axis, False else"
+#     print "- [grid on Y] is True if you want grid on Y axis, False else"
+#     print "- [minimum Value on Y] is the minimum value of Y axis"
+#     print "- [maximum Value on Y] is the maximum value of Y axis"
+#     print "- [figure to link location] is the coordonate of figure to link"
+#     print
+#     print "- [CurveName] is the name of the curve"
+#     print "- [Row] is the row number of the curve"
+#     print "- [Column] is the column number of the curve"
+#     print "- [Legend] is the legend of the curve"
+#     print "- [Color] is the color of the curve"
