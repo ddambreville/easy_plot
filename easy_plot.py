@@ -224,12 +224,12 @@ class Figure(object):
         else:
             self.plot_widget.disableAutoRange()
 
-        if self.button.auto_range == 1:
+        if self.button.auto_range == 1 and len(self.curves_list) > 0:
             if self.max_time is None:
                 time = DEFAULT_TIME
             else:
                 time = self.max_time
-            # print self.curves_list[0].datas.keys()
+
             if len(self.curves_list[0].datas.keys()) > 0 and\
                 max(self.curves_list[0].datas.keys()) >= time:
 
