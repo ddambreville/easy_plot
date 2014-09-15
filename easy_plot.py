@@ -7,8 +7,10 @@ Last Update on 2014/09/12
 
 Author: Renaud CARRIERE
         Emmanuel NALEPA
+        Jason LETORT
 Contact: rcarriere@aldebaran.com
          enalepa@aldebaran.com
+         jletort@presta.aldebaran-robotics.fr
 Copyright: Aldebaran Robotics 2014
 @pep8 : Complains without rules R0902, R0912, R0913, R0914, R0915 and W0212
 """
@@ -25,23 +27,34 @@ PERIOD_CHECK_BUTTON = 10
 import argparse
 import os.path
 import csv
-import easy_plot_connection
 import threading
-#import time
-
 import sys
 
-from pyqtgraph.Qt import QtGui, QtCore
-
 try:
+    from pyqtgraph.Qt import QtGui, QtCore
     import pyqtgraph as pg
-    import read_cfg
 except ImportError:
     print "Well that's embarrassing !"
     print "I can't find pyqtgraph on your computer. Please install pyqtgraph."
     print 'You can visit the section "Installation" of www.pyqtgraph.org.'
     print 'If pip is already installed on your computer, you can just type'
     print '"pip install pyqtgraph" in a command line interface.'
+    exit()
+
+try:
+    import easy_plot_connection
+except ImportError:
+    print "Well that's embarrassing !"
+    print "I can't find easy_plot_connection on your computer."
+    print "Please put easy_plot_connection.py on easy_plot folder"
+    exit()
+
+try:
+    import read_cfg
+except ImportError:
+    print "Well that's embarrassing !"
+    print "I can't find read_cfg on your computer."
+    print "Please put read_cfg.py on easy_plot folder"
     exit()
 
 

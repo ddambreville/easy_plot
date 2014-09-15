@@ -7,12 +7,21 @@ Last Update on 2014/09/04
 
 Author: Renaud CARRIERE
         Emmanuel NALEPA
+        Jason LETORT
 Contact: rcarriere@aldebaran.com
          enalepa@aldebaran.com
+         jletort@presta.aldebaran-robotics.fr
 Copyright: Aldebaran Robotics 2014
+@pep8 : Complains without rules R0902, R0912, R0913, R0914, R0915 and W0212
 """
 
-import tools
+try:
+    import tools
+except ImportError:
+    print "Well that's embarrassing !"
+    print "I can't find tools on your computer."
+    print "Please put tools.py on easy_plot folder"
+    exit()
 
 try:
     import pyqtgraph as pg
@@ -347,72 +356,3 @@ class Parameters(object):
             else:
                 print_help()
                 exit()
-
-
-# def print_configfile_struct():
-#     """Print Configuration File's structure"""
-
-#     print "[" + GENERAL_SECTION + "]"
-#     print "MaxTime         : [maximum time]"
-#     print "Title           : [title]"
-#     print "Anti-aliasing   : [anti aliasing]"
-#     print "LinkXAll        : [link all x axis]"
-#     print
-#     print "[[row of figure]-[column of figure]]"
-#     print "Title  : [title of figure]"
-#     print "LabelX : [label on X axis]"
-#     print "UnitX  : [unit of X axis]"
-#     print "LabelY : [label on Y axis]"
-#     print "UnitY  : [unit on Y axis]"
-#     print "GridX  : [grid on X]"
-#     print "GridY  : [grid on Y]"
-#     print "MinY   : [minimum Value on Y]"
-#     print "MaxY   : [maximum Value on X]"
-#     print "Link   : [row figure to link location] [col figure to link location]"
-#     print
-#     print "[[row of figure]-[column of figure]]"
-#     print "Title  : [title of figure]"
-#     print "LabelX : [label on X axis]"
-#     print "UnitX  : [unit of X axis]"
-#     print "LabelY : [label on Y axis]"
-#     print "UnitY  : [unit on Y axis]"
-#     print "GridX  : [grid on X]"
-#     print "GridY  : [grid on Y]"
-#     print "MinY   : [minimum Value on Y]"
-#     print "MaxY   : [maximum Value on Y]"
-#     print "Link   : [row figure to link location] [col figure to link location]"
-#     print
-#     print "..."
-#     print
-#     print "[Curves]"
-#     print "[CurveName] : [Row] [Column] [Legend] [Color]"
-#     print "[CurveName] : [Row] [Column] [Legend] [Color]"
-#     print "..."
-#     print
-#     print "where :"
-#     print "- [maximum time] is the maximum time of each curve"
-#     print "- [title] is the title of the window"
-#     print "- [anti aliasing] is True if you want anti aliasing to be"
-#     print "  applied to the window, False else"
-#     print "- [link all x axis] is True if you want to link all x axis,"
-#     print "  False else"
-#     print
-#     print "- [[row of figure]-[column of figure]] is the location of"
-#     print "  the figure on the window. For example [1-1] is the first"
-#     print "  figure"
-#     print "- [title of figure] is the title of the figure"
-#     print "- [label on X axis] is the label on the X axis"
-#     print "- [unit of X axis] is the unity of data on the X axis"
-#     print "- [label on Y axis] is the label on the Y axis"
-#     print "- [unit on Y axis] is the unity of data on the Y axis"
-#     print "- [grid on X] is True if you want grid on X axis, False else"
-#     print "- [grid on Y] is True if you want grid on Y axis, False else"
-#     print "- [minimum Value on Y] is the minimum value of Y axis"
-#     print "- [maximum Value on Y] is the maximum value of Y axis"
-#     print "- [figure to link location] is the coordonate of figure to link"
-#     print
-#     print "- [CurveName] is the name of the curve"
-#     print "- [Row] is the row number of the curve"
-#     print "- [Column] is the column number of the curve"
-#     print "- [Legend] is the legend of the curve"
-#     print "- [Color] is the color of the curve"

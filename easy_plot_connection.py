@@ -12,6 +12,7 @@ Contact: jletort@presta.aldebaran-robotics.fr
          enalepa@aldebaran.com
          rcarriere@aldebaran.com
 Copyright: Aldebaran Robotics 2014
+@pep8 : Complains without rules R0902, R0912, R0913, R0914, R0915 and W0212
 """
 
 import threading
@@ -70,7 +71,7 @@ class Client(object):
             except (socket.error, BaseException):
                 if flag_print is True:
                     sys.stdout.write(
-                        "Try connect with " + server_ip + " ")
+                        "Try to connect with " + server_ip + " ")
                     flag_print = False
                 cpt += 1
 

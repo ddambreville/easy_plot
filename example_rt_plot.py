@@ -7,9 +7,12 @@ Last Update on 2014/09/12
 
 Author: Renaud CARRIERE
         Emmanuel NALEPA
+        Jason LETORT
 Contact: rcarriere@aldebaran.com
          enalepa@aldebaran.com
+         jletort@presta.aldebaran-robotics.fr
 Copyright: Aldebaran Robotics 2014
+@pep8 : Complains without rules R0902, R0912, R0913, R0914, R0915 and W0212
 """
 
 import argparse
