@@ -422,6 +422,13 @@ class Window(object):
         else:
             self._print_error(curve_name)
 
+    def check_curves_in_csv(self, csv_curve_list):
+        """ check if curves from cfg are in csv """
+        if self.is_rt is False:
+            for name in self.curves.keys():
+                if name not in csv_curve_list:
+                    print "WARNING: " + name + " is in cfg but not in csv"
+
     def curves_erase(self):
         """Public method : Erase all curves of the window"""
         for curve in self.curves.values():
@@ -555,6 +562,8 @@ def main():
                         print 'Error : Curve %s already has value for time %s'\
                             % (key, str(data_x))
                         exit()
+
+    win.check_curves_in_csv(csv_dic.keys())
 
     for curve in csv_dic.keys():
         datas_x = csv_dic[curve].keys()
