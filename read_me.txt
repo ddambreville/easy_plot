@@ -122,7 +122,7 @@ where :
                                                  may begin with #
 - [Width] is the size of the curve. If not specified, the default width is 1
 
-_______________________________________________________________________________
+______________________________________________________________________________
 
 2) Launch easy_plot.
 -----------------------
@@ -174,8 +174,95 @@ The following option is for static plotting only:
         specify. A example is provided in example.cvs
 
 
-If you use it as an API :
+==============================================================================
+
+                         HOW TO USE AS AN API ?
+
+==============================================================================
+
+Server side:
+-------------
+  *** The server will send datas to plot in real time. ***
   An example is given in example_rt_plot.py
+
+First of all, you have to import easy_plot_connection.
+
+1) Create the server that will send datas
+
+server = easy_plot_connection.Server([port], [local_plot], [max_points])
+
+[port] is the port used to send datas. By default, it is 4521.
+
+[local_plot] must be True if server and client is the same machine. False else
+By default, local_plot is False.
+
+[max_points] is the max number of datas that the server can store
+waiting to plot.
+By default, it is 100 000.
+
+2) Add points to send
+
+server.add_point([curve name], [x data], [y data])
+
+[curve name] is the name of the curve
+
+[x data], [y data] is the point to send
+
+3) Erase curve
+You can, if you want, erase you curve with the following command:
+
+server.curves_erase()
+
+
+
+On your computer:
+-----------------
+  *** You can plot from csv or from server describe before ***
+  As example, take a look of main function in easy_plot.py
+
+  First of all, you have to import easy_plot.
+
+1) Create the Window:
+
+win = easy_plot.Window([config_file], [res_x], [res_y], [printable])
+
+Where:
+[config_file] is to specify the path to the configuration file
+[res_x] define resolution in x of window.
+        If not specified, the default resolution is 1920.
+[res_y] efine resolution in y of window.
+        If not specified, the default resolution is 1080.
+[printable] is True to run a full printable version of easy plot, False else.
+        You can print all window, and not just one figure.
+
+2) Add points to plot
+
+win.add_point([curve], [data_x], [data_y])
+
+Where:
+[curve] is the curve which you want to add point
+[data_x] is the x data to add
+[data_y] is the y data to add
+
+3) Display the curve
+
+win.curve_display([curve])
+
+Where [curve] is the curve to display
+
+4) In case of real time plotting, create client thread to get datas
+
+import threading
+import easy_plot_connection
+
+thread = threading.Thread(target=easy_plot_connection.Client,
+                          args=(win, server_ip, port, refresh_period))
+thread.daemon = True
+thread.start()
+
+5) Run application
+
+win.run()
 
 ******************************************************************************
 
