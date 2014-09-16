@@ -15,6 +15,8 @@ Copyright: Aldebaran Robotics 2014
 @pep8 : Complains without rules R0902, R0912, R0913, R0914, R0915 and W0212
 """
 
+VERSION = "beta 1.0"
+
 DEFAULT_CONFIG_FILE = "easy_plot.cfg"
 DEFAULT_ABSCISSA = "Time"
 DEFAULT_RESOLUTION_X = 1920
@@ -491,6 +493,9 @@ def main():
                         type=float, default=DEFAULT_REFRESH_PERIOD,
                         help="refresh period for real time plot\
                         (default: 0.1s)")
+
+    parser.add_argument("-v", "--version", action="version",
+                        version="%(prog)s " + VERSION)
 
     args = parser.parse_args()
 

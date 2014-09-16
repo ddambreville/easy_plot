@@ -1,6 +1,6 @@
 Name      : easy_plot.py
-Version   : Alpha
-Date      : 2014/09/05
+Version   : beta 1.0
+Date      : 2014/09/16
 Author    : Renaud CARRIERE
             Emmanuel NALEPA
             Jason LETORT
