@@ -20,22 +20,27 @@ import time
 import socket
 import sys
 
+def str2Network(s):
+  '''Transform string to network format (python v2=str, v3=bytearray)'''
+  if sys.version_info >= (3,0):
+    return bytearray(s, 'utf-8')
+  return s
+
 DEFAULT_REFRESH_PERIOD = 0.1  # s
 # TODO : Find a way to specify the DEFAULT_PORT only one time
 DEFAULT_PORT = 4521
 
 # Client -> Server
-IS_DATA_AVAILABLE = "00"
-GET_DATA = "01"
+IS_DATA_AVAILABLE = str2Network("00")
+GET_DATA = str2Network("01")
 
 TRY_LOST_CONNEXION = 10
 TIME_BETWEEN_TRY = 2  # s
 
 # Server -> Client
-DATA_AVAILABLE = "10"
-NO_DATA_AVAILABLE = "11"
-ERASE_CURVES = "12"
-
+DATA_AVAILABLE = str2Network("10")
+NO_DATA_AVAILABLE = str2Network("11")
+ERASE_CURVES = str2Network("12")
 
 class Client(object):
 
@@ -59,7 +64,7 @@ class Client(object):
             try:
                 if flag is True:
                     self.sock.connect((socket.gethostbyname(server_ip), port))
-                    print " Connexion OK"
+                    print(" Connexion OK")
                     flag_print = True
                     flag = False
 
@@ -81,7 +86,7 @@ class Client(object):
                     flag = True
                     time.sleep(TIME_BETWEEN_TRY)
                 else:
-                    print " TIME OUT"
+                    print(" TIME OUT")
                     continu = False
 
     def get_datas(self):
@@ -151,6 +156,7 @@ class Server(object):
 
         # Create socket and wait for a client connection
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
         # Get the ip adress
 
@@ -166,11 +172,11 @@ class Server(object):
                 except socket.gaierror:
                     self.ip_adress = socket.gethostbyname(self.hostname)
             except socket.gaierror:
-                print "ERROR: Impossible to get host with " + self.hostname
-                print "       or " + self.hostname + ".local"
+                print("ERROR: Impossible to get host with " + self.hostname)
+                print("       or " + self.hostname + ".local")
                 exit()
 
-        print self.hostname + " send datas at " + self.ip_adress
+        print (self.hostname + " send datas at " + self.ip_adress)
 
         # Bind of the socket
         self.sock.bind((self.ip_adress, port))
@@ -234,7 +240,7 @@ class Server(object):
         else:
             string_to_send += "END"
 
-        client.send(string_to_send)
+        client.send(str2Network(string_to_send))
 
     def add_point(self, curve_name, data_x, data_y):
         """Public method : Add a point to plot in a curve"""
