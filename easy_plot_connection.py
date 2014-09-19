@@ -20,11 +20,12 @@ import time
 import socket
 import sys
 
+
 def str2Network(s):
-  '''Transform string to network format (python v2=str, v3=bytearray)'''
-  if sys.version_info >= (3,0):
-    return bytearray(s, 'utf-8')
-  return s
+    '''Transform string to network format (python v2=str, v3=bytearray)'''
+    if sys.version_info >= (3, 0):
+        return bytearray(s, 'utf-8')
+    return s
 
 DEFAULT_REFRESH_PERIOD = 0.1  # s
 # TODO : Find a way to specify the DEFAULT_PORT only one time
@@ -41,6 +42,7 @@ TIME_BETWEEN_TRY = 2  # s
 DATA_AVAILABLE = str2Network("10")
 NO_DATA_AVAILABLE = str2Network("11")
 ERASE_CURVES = str2Network("12")
+
 
 class Client(object):
 
@@ -255,7 +257,7 @@ class Server(object):
         self.has_to_erase_curves = True
 
     def curves_limitation(self):
-        """Limit number of curves to save RAM"""
+        """Limit number of points to save RAM"""
         for keys in self.curves.keys():
             if len(self.curves[keys]) > self.max_points:
                 self.curves[keys].pop(0)

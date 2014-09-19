@@ -15,16 +15,19 @@ Copyright: Aldebaran Robotics 2014
 @pep8 : Complains without rules R0902, R0912, R0913, R0914, R0915 and W0212
 """
 
-VERSION = "beta 1.0"
+VERSION = "beta 1.1"
 
 DEFAULT_CONFIG_FILE = "easy_plot.cfg"
 DEFAULT_ABSCISSA = "Time"
 DEFAULT_RESOLUTION_X = 1920
 DEFAULT_RESOLUTION_Y = 1080
 DEFAULT_PORT = 4521
+
 DEFAULT_REFRESH_PERIOD = 0.1  # s
 DEFAULT_TIME = 10  # s
-PERIOD_CHECK_BUTTON = 10
+
+PERIOD_CHECK_BUTTON = 250  # ms
+PERIOD_CHECK_ACTION = 20  # ms
 
 import argparse
 import os.path
@@ -89,8 +92,8 @@ class Button(object):
         self.auto_scale = 0
         self.auto_range = 0
 
-        self.timer_btn1 = QtCore.QTimer()
-        self.timer_btn2 = QtCore.QTimer()
+        self.timer_btn = QtCore.QTimer()
+        self.timer_action = QtCore.QTimer()
 
         layout.addWidget(self.btn1, row, column)
         layout.addWidget(self.btn2, row, column + 2)
@@ -393,14 +396,16 @@ class Window(object):
             for fig in self.figures.values():
 
                 if fig.link is None:
+                    fig.button.btn1.setText("Auto Scale: ON")
                     fig.button.btn2.setText("Auto Range: ON")
+                    fig.button.auto_scale = 1
                     fig.button.auto_range = 1
 
-                fig.button.timer_btn1.timeout.connect(fig.button.update)
-                fig.button.timer_btn1.start(PERIOD_CHECK_BUTTON)
+                fig.button.timer_btn.timeout.connect(fig.button.update)
+                fig.button.timer_btn.start(PERIOD_CHECK_BUTTON)
 
-                fig.button.timer_btn2.timeout.connect(fig.action_button)
-                fig.button.timer_btn2.start(PERIOD_CHECK_BUTTON)
+                fig.button.timer_action.timeout.connect(fig.action_button)
+                fig.button.timer_action.start(PERIOD_CHECK_ACTION)
 
         self.window.show()
 
@@ -578,7 +583,8 @@ def main():
                             % (key, str(data_x))
                         exit()
 
-    win.check_curves_in_csv(csv_dic.keys())
+    if len(data_file_list) > 0:
+        win.check_curves_in_csv(csv_dic.keys())
 
     for curve in csv_dic.keys():
         datas_x = csv_dic[curve].keys()
