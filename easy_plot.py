@@ -393,19 +393,20 @@ class Window(object):
         if self.printable is False:
             self.window.setLayout(self.layout)
 
-            for fig in self.figures.values():
+            if self.is_rt is True:
+                for fig in self.figures.values():
 
-                if fig.link is None:
-                    fig.button.btn1.setText("Auto Scale: ON")
-                    fig.button.btn2.setText("Auto Range: ON")
-                    fig.button.auto_scale = 1
-                    fig.button.auto_range = 1
+                    if fig.link is None:
+                        fig.button.btn1.setText("Auto Scale: ON")
+                        fig.button.btn2.setText("Auto Range: ON")
+                        fig.button.auto_scale = 1
+                        fig.button.auto_range = 1
 
-                fig.button.timer_btn.timeout.connect(fig.button.update)
-                fig.button.timer_btn.start(PERIOD_CHECK_BUTTON)
+                    fig.button.timer_btn.timeout.connect(fig.button.update)
+                    fig.button.timer_btn.start(PERIOD_CHECK_BUTTON)
 
-                fig.button.timer_action.timeout.connect(fig.action_button)
-                fig.button.timer_action.start(PERIOD_CHECK_ACTION)
+                    fig.button.timer_action.timeout.connect(fig.action_button)
+                    fig.button.timer_action.start(PERIOD_CHECK_ACTION)
 
         self.window.show()
 
@@ -541,13 +542,14 @@ def main():
             pg.exit()
 
     # Create the window
-    win = Window(config_file=args.config_file, res_x=res_x, res_y=res_y,
-                 printable=printable)
+    if server_ip is not None:
+        win = Window(config_file=args.config_file, res_x=res_x, res_y=res_y,
+                     printable=printable, is_rt=True)
+    else:
+        win = Window(config_file=args.config_file, res_x=res_x, res_y=res_y,
+                     printable=printable, is_rt=False)
 
     abscissa = win.abscissa
-
-    if server_ip is not None:
-        win.is_rt = True
 
     # Plotting from CSV files
     csv_dic = {}
