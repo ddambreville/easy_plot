@@ -98,9 +98,9 @@ class Button(object):
     def _auto_scale_on(self):
         """Private method : Enable Auto Scale"""
         self.btn1.setText("Auto Scale: ON")
-        self.btn2.setText("Auto Range: OFF")
+        #self.btn2.setText("Auto Range: OFF")
         self.auto_scale = 1
-        self.auto_range = 0
+        #self.auto_range = 0
 
     def _auto_scale_off(self):
         """Private method : Disable Auto Scale"""
@@ -109,10 +109,10 @@ class Button(object):
 
     def _auto_range_on(self):
         """Pritave method : Enable Auto Range"""
-        self.btn1.setText("Auto Scale: OFF")
+        #self.btn1.setText("Auto Scale: OFF")
         self.btn2.setText("Auto Range: ON")
         self.auto_range = 1
-        self.auto_scale = 0
+        #self.auto_scale = 0
 
     def _auto_range_off(self):
         """Private method : Disable Auto Range"""
@@ -220,7 +220,7 @@ class Figure(object):
 
     def define_link(self):
         """Public method : Define link with X axes"""
-        self.viewbox.linkView(axis=self.viewbox.XAxis, view=self.link)
+        self.viewbox.linkView(axis=self.viewbox.XAxis, view=self.link.viewbox)
 
         if self._printable is False:
             self.button.hide_all()
@@ -234,8 +234,15 @@ class Figure(object):
 
     def action_button(self):
         """Public method : Define actions of buttons"""
-        if self.button.auto_scale == 1:
+        if self.link is not None:
+            self.button.auto_scale = self.link.button.auto_scale
+            self.button.auto_range = self.link.button.auto_range
+
+        if self.button.auto_scale == 1 and self.button.auto_range == 0:
             self.plot_widget.enableAutoRange()
+        elif self.button.auto_scale == 1 and self.button.auto_range == 1:
+            self.plot_widget.enableAutoRange(
+                axis=self.viewbox.YAxis, enable=True)
         else:
             self.plot_widget.disableAutoRange()
 
@@ -270,6 +277,9 @@ class Window(object):
         parameters = read_cfg.Parameters(config_file)
 
         self.app = QtGui.QApplication([])
+        self.app.setOrganizationName('Aldebaran')
+        self.app.setOrganizationDomain('aldebaran.com')
+        self.app.setApplicationName('Easy Plot')
 
         self.max_time = parameters.max_time
         self.title = parameters.title
@@ -334,7 +344,7 @@ class Window(object):
                 if figure_param.link is not None:
                     try:
                         self.figures[pos].link = self.figures[
-                            figure_param.link].viewbox
+                            figure_param.link]  # .viewbox
                         self.figures[pos].define_link()
                     except (IndexError, KeyError):
 
@@ -353,7 +363,7 @@ class Window(object):
                     self.figures[pos].link = viewbox_prec
                     self.figures[pos].define_link()
 
-                viewbox_prec = self.figures[pos].viewbox
+                viewbox_prec = self.figures[pos]  # .viewbox
 
         # Populate the curves dictionnary
         for name, curve_param in parameters.curves.items():
