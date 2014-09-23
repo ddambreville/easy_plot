@@ -542,7 +542,7 @@ def main():
 
     # Test if configuration file exists
     if not os.path.isfile(config_file):
-        print ("ERROR : File '" + config_file + "'' cannot be found")
+        print ("ERROR : File '" + config_file + "' cannot be found")
         pg.exit()
 
     # Test if all data files exist

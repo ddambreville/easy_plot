@@ -67,15 +67,12 @@ class Parameters(object):
         self.figures = {}
         self.curves = {}
 
-        conf_dic = tools.read_config_file(config_file_path)
-        """
         try:
             conf_dic = tools.read_config_file(config_file_path)
         except BaseException:
             print ("Oops ! An error occured during configuration file reading")
             print ("Please, check configuration file's syntaxe")
             exit()
-        """
 
         # General parameters
         try:
