@@ -18,7 +18,10 @@ Created on 2014/05/03
 
 """
 
-import ConfigParser
+try:
+    import ConfigParser
+except ImportError:
+    import configparser as ConfigParser
 
 
 def read_config_file(config_file_path):
@@ -42,6 +45,7 @@ def read_config_file_section(config_file_path, section):
 
     if config.has_section(section):
         configSection = config._sections[section]
+
         configSection.pop("__name__")
 
         for key, value in configSection.items():
