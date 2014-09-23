@@ -36,30 +36,39 @@ import threading
 import sys
 
 try:
-    from pyqtgraph.Qt import QtGui, QtCore
     import pyqtgraph as pg
-except ImportError:
-    print "Well that's embarrassing !"
-    print "I can't find pyqtgraph on your computer. Please install pyqtgraph."
-    print 'You can visit the section "Installation" of www.pyqtgraph.org.'
-    print 'If pip is already installed on your computer, you can just type'
-    print '"pip install pyqtgraph" in a command line interface.'
+    from pyqtgraph.Qt import QtGui, QtCore
+except BaseException:
+    print ("Well that's embarrassing !")
+    print
+    print ("I can't find PyQtGraph and/or PyQt on your computer.")
+    print ("Please install PyQtGraph.")
+    print ("You can visit the section 'Installation' of www.pyqtgraph.org.")
+    print ("If pip is already installed on your computer, you can just type")
+    print ("'pip install pyqtgraph' in a command line interface.")
+    print
+    print ("PyQtGraph require PyQt4, Numpy and SciPy to work")
+    print ("Please install PyQt4, Numpy and SciPy.")
+    print ("For more informations, you can visit the following web pages:")
+    print ("http://pyqt.sourceforge.net/Docs/PyQt4/installation.html")
+    print ("http://www.scipy.org/scipylib/download.html")
     exit()
+
 
 try:
     import easy_plot_connection
 except ImportError:
-    print "Well that's embarrassing !"
-    print "I can't find easy_plot_connection on your computer."
-    print "Please put easy_plot_connection.py on easy_plot folder"
+    print ("Well that's embarrassing !")
+    print ("I can't find easy_plot_connection on your computer.")
+    print ("Please put easy_plot_connection.py on easy_plot folder")
     exit()
 
 try:
     import read_cfg
 except ImportError:
-    print "Well that's embarrassing !"
-    print "I can't find read_cfg on your computer."
-    print "Please put read_cfg.py on easy_plot folder"
+    print ("Well that's embarrassing !")
+    print ("I can't find read_cfg on your computer.")
+    print ("Please put read_cfg.py on easy_plot folder")
     exit()
 
 
@@ -255,8 +264,8 @@ class Figure(object):
             else:
                 time = self.max_time
 
-            if len(self.curves_list[0].datas.keys()) > 0 and\
-                max(self.curves_list[0].datas.keys()) >= time:
+            if (len(self.curves_list[0].datas.keys()) > 0 and
+                max(self.curves_list[0].datas.keys()) >= time):
 
                 self.plot_widget.setXRange(
                     max(self.curves_list[0].datas.keys()) - time,
@@ -356,10 +365,10 @@ class Window(object):
                         figure2 = figure2.replace("(", "[")
                         figure2 = figure2.replace(")", "]")
 
-                        print "ERROR: Figure " + figure1
-                        print "       can't be linked with figure " + figure2
-                        print "       because this figure doesn't exist"
-                        print "       Please, check configuration file"
+                        print ("ERROR: Figure " + figure1)
+                        print ("       can't be linked with figure " + figure2)
+                        print ("       because this figure doesn't exist")
+                        print ("       Please, check configuration file")
                         pg.exit()
             else:
                 if viewbox_prec is not None:
@@ -377,9 +386,9 @@ class Window(object):
                 figure = self.figures[(curve_row, curve_column)]
             except KeyError:
                 txt = "[" + str(curve_row) + "-" + str(curve_column) + "]"
-                print "ERROR: Curve " + name + " is define at " + txt
-                print "       but there is no figure at these coordonates"
-                print "       Please, check configuration file"
+                print ("ERROR: Curve " + name + " is define at " + txt)
+                print ("       but there is no figure at these coordonates")
+                print ("       Please, check configuration file")
                 pg.exit()
 
             plot = figure.plot_widget.plot(pen=curve_param.color,
@@ -413,9 +422,10 @@ class Window(object):
     def _print_error(self, curve_name):
         """Print Error in case of curve name problem with rt plot """
         if self.is_rt is True:
-            print 'ERROR : The curve "' + curve_name + '"" is not present in'
-            print "the configuration file, but a point has to be added to this"
-            print "curve."
+            print ("ERROR : The curve '" + curve_name + "'' is not present in")
+            print (
+                "the configuration file, but a point has to be added to this")
+            print ("curve.")
             pg.exit()
 
     def add_point(self, curve_name, var_x, var_y, has_to_plot=True):
@@ -445,7 +455,7 @@ class Window(object):
         if self.is_rt is False:
             for name in self.curves.keys():
                 if name not in csv_curve_list:
-                    print "WARNING: " + name + " is in cfg but not in csv"
+                    print ("WARNING: " + name + " is in cfg but not in csv")
 
     def curves_erase(self):
         """Public method : Erase all curves of the window"""
@@ -525,20 +535,20 @@ def main():
     printable = args.printable
 
     if server_ip and data_file_list:
-        print 'Please chose plotting datas from a file OR from a server.'
-        print 'If using option "-i" or "--IP", please do not specify a'
-        print 'data file to read.'
+        print ("Please chose plotting datas from a file OR from a server.")
+        print ("If using option '-i' or '--IP', please do not specify a")
+        print ("data file to read.'")
         pg.exit()
 
     # Test if configuration file exists
     if not os.path.isfile(config_file):
-        print 'ERROR : File "' + config_file + '" cannot be found'
+        print ("ERROR : File '" + config_file + "'' cannot be found")
         pg.exit()
 
     # Test if all data files exist
     for data_file in data_file_list:
         if not os.path.isfile(data_file):
-            print 'ERROR : File "' + data_file + '" cannot be found'
+            print ("ERROR : File '" + data_file + "' cannot be found")
             pg.exit()
 
     # Create the window
@@ -560,8 +570,8 @@ def main():
             # Test if abscissa key exist in dic_data
             if not index:
                 if abscissa not in row:
-                    print 'ERROR : "%s" not find in File "%s"\
-                    ' % (abscissa, data_file)
+                    print ("ERROR : '%s' not find in File '%s'\
+                    " % (abscissa, data_file))
                     pg.exit()
             data_x = float(row[abscissa])
 
@@ -571,18 +581,19 @@ def main():
                         try:
                             data_y = float(value)
                         except (TypeError, ValueError):
-                            print "ERROR: " + str(value) + " in " + str(key)
-                            print "       is not a number"
+                            print ("ERROR: " + str(value) + " in " + str(key))
+                            print ("       is not a number")
                             pg.exit()
                     else:
-                        print "WARNING: None Value in " + str(key) + " set to 0"
+                        print (
+                            "WARNING: None Value in " + str(key) + " set to 0")
                         data_y = 0
                     cur_curve = csv_dic.setdefault(key, {})
                     if data_x not in cur_curve:
                         cur_curve.update({data_x: data_y})
                     else:
-                        print 'Error : Curve %s already has value for time %s'\
-                            % (key, str(data_x))
+                        print ("Error : Curve %s already has value for time %s"
+                               % (key, str(data_x)))
                         exit()
 
     if len(data_file_list) > 0:

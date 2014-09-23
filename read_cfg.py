@@ -15,23 +15,16 @@ Copyright: Aldebaran Robotics 2014
 @pep8 : Complains without rules R0902, R0912, R0913, R0914, R0915 and W0212
 """
 
+import pyqtgraph as pg
+
 try:
     import tools
 except ImportError:
-    print "Well that's embarrassing !"
-    print "I can't find tools on your computer."
-    print "Please put tools.py on easy_plot folder"
+    print ("Well that's embarrassing !")
+    print ("I can't find tools on your computer.")
+    print ("Please put tools.py on easy_plot folder")
     exit()
 
-try:
-    import pyqtgraph as pg
-except ImportError:
-    print "Well that's embarrassing !"
-    print "I can't find pyqtgraph on your computer. Please install pyqtgraph."
-    print 'You can visit the section "Installation" of www.pyqtgraph.org.'
-    print 'If pip is already installed on your computer, you can just type'
-    print '"pip install pyqtgraph" in a command line interface.'
-    exit()
 
 GENERAL_SECTION = "General"
 CURVES_SECTION = "Curves"
@@ -74,12 +67,15 @@ class Parameters(object):
         self.figures = {}
         self.curves = {}
 
+        conf_dic = tools.read_config_file(config_file_path)
+        """
         try:
             conf_dic = tools.read_config_file(config_file_path)
         except BaseException:
-            print "Oops ! An error occured during configuration file reading"
-            print "Please, check configuration file's syntaxe"
+            print ("Oops ! An error occured during configuration file reading")
+            print ("Please, check configuration file's syntaxe")
             exit()
+        """
 
         # General parameters
         try:
@@ -123,45 +119,47 @@ class Parameters(object):
                 self.unit_x = None
 
         except (IndexError, KeyError):
-            print "Easy Plot configuration file MUST have a section named"
-            print GENERAL_SECTION + " like the one following :"
+            print ("Easy Plot configuration file MUST have a section named")
+            print (GENERAL_SECTION + " like the one following :")
             print
-            print "[" + GENERAL_SECTION + "]"
-            print "MaxTime         : [maximum time]"
-            print "Title           : [title]"
-            print "Abscissa        : [abscissa]"
-            print "LabelX          : [label of x axis]"
-            print "UnitX           : [unit of x axis]"
-            print "Anti-aliasing   : [anti aliasing]"
-            print "LinkXAll        : [link all x axis]"
+            print ("[" + GENERAL_SECTION + "]")
+            print ("MaxTime         : [maximum time]")
+            print ("Title           : [title]")
+            print ("Abscissa        : [abscissa]")
+            print ("LabelX          : [label of x axis]")
+            print ("UnitX           : [unit of x axis]")
+            print ("Anti-aliasing   : [anti aliasing]")
+            print ("LinkXAll        : [link all x axis]")
             print
-            print "where :"
-            print "- [number of rows] is the number of rows"
-            print "- [number of columns] is the number of colums"
-            print "- [maximum time] is the maximum time of each curve"
-            print "- [title] is the title of the window"
-            print "- [abscissa] is the name of abscissa in cvs file"
-            print "- [label of x axis] is the label of x axis"
-            print "- [unit of x axis] is the unit of x axis"
-            print "- [anti aliasing] is True if you want anti aliasing to be"
-            print "  applied to the window, False else"
-            print "- [link all x axis] is True if you want to link all x axis,"
-            print "  False else"
+            print ("where :")
+            print ("- [number of rows] is the number of rows")
+            print ("- [number of columns] is the number of colums")
+            print ("- [maximum time] is the maximum time of each curve")
+            print ("- [title] is the title of the window")
+            print ("- [abscissa] is the name of abscissa in cvs file")
+            print ("- [label of x axis] is the label of x axis")
+            print ("- [unit of x axis] is the unit of x axis")
+            print ("- [anti aliasing] is True if you want anti aliasing to be")
+            print ("  applied to the window, False else")
+            print (
+                "- [link all x axis] is True if you want to link all x axis,")
+            print ("  False else")
             exit()
 
         except (ValueError, TypeError):
-            print "There is a no valid value on " + GENERAL_SECTION + " section"
-            print "Please, respect the following format :"
-            print "- [number of rows] is an integer"
-            print "- [number of columns] is an integer"
-            print "- [maximum time] is an integer"
-            print "- [title] is a string"
-            print "- [abscissa] is a string"
-            print "- [label of x axis] is a string"
-            print "- [unit of x axis] is a string"
-            print "- [anti aliasing] is True if you want anti aliasing to be"
-            print "  applied to the window, False else"
-            print "- [UpdateServeur] is the time between two windows refresh"
+            print ("There is a no valid value on " +
+                   GENERAL_SECTION + " section")
+            print ("Please, respect the following format :")
+            print ("- [number of rows] is an integer")
+            print ("- [number of columns] is an integer")
+            print ("- [maximum time] is an integer")
+            print ("- [title] is a string")
+            print ("- [abscissa] is a string")
+            print ("- [label of x axis] is a string")
+            print ("- [unit of x axis] is a string")
+            print ("- [anti aliasing] is True if you want anti aliasing to be")
+            print ("  applied to the window, False else")
+            print ("- [UpdateServeur] is the time between two windows refresh")
 
             exit()
 
@@ -173,22 +171,22 @@ class Parameters(object):
         # Curves parameters
         def print_help():
             """Print help"""
-            print "Easy Plot configuration file MUST have a section named"
-            print "[Curves] like the one following :"
+            print ("Easy Plot configuration file MUST have a section named")
+            print ("[Curves] like the one following :")
             print
-            print "[Curves]"
-            print "[CurveName] : [Row] [Column] [Legend] [Color]"
-            print "[CurveName] : [Row] [Column] [Legend] [Color]"
-            print "[CurveName] : [Row] [Column] [Legend] [Color]"
-            print "[CurveName] : [Row] [Column] [Legend] [Color]"
-            print "..."
+            print ("[Curves]")
+            print ("[CurveName] : [Row] [Column] [Legend] [Color]")
+            print ("[CurveName] : [Row] [Column] [Legend] [Color]")
+            print ("[CurveName] : [Row] [Column] [Legend] [Color]")
+            print ("[CurveName] : [Row] [Column] [Legend] [Color]")
+            print ("...")
             print
-            print "where :"
-            print "- [CurveName] is the name of the curve"
-            print "- [Row] is the row number of the curve"
-            print "- [Column] is the column number of the curve"
-            print "- [Legend] is the legend of the curve"
-            print "- [Color] is the color of the curve"
+            print ("where :")
+            print ("- [CurveName] is the name of the curve")
+            print ("- [Row] is the row number of the curve")
+            print ("- [Column] is the column number of the curve")
+            print ("- [Legend] is the legend of the curve")
+            print ("- [Color] is the color of the curve")
 
         try:
             dummy_dic = conf_dic.copy()
@@ -206,8 +204,8 @@ class Parameters(object):
                 (str_num_row, str_num_column) = str_name.split("-")
                 fig_coord = (int(str_num_row), int(str_num_column))
             except BaseException:
-                print "ERROR: A section name is not good"
-                print "       Please, check configuration file"
+                print ("ERROR: A section name is not good")
+                print ("       Please, check configuration file")
                 exit()
 
             try:
@@ -230,9 +228,10 @@ class Parameters(object):
             except (KeyError, IndexError):
                 min_y = DEFAULT_MIN
             except (ValueError, TypeError):
-                print "ERROR : an error occured on MinY in"
-                print "   [" + str_num_row + "-" + str_num_column + "] section"
-                print "   -> MinY is set to default value"
+                print ("ERROR : an error occured on MinY in")
+                print (
+                    "   [" + str_num_row + "-" + str_num_column + "] section")
+                print ("   -> MinY is set to default value")
                 print
                 min_y = DEFAULT_MIN
 
@@ -241,9 +240,10 @@ class Parameters(object):
             except (KeyError, IndexError):
                 max_y = DEFAULT_MAX
             except (ValueError, TypeError):
-                print "ERROR : an error occured on MaxY in"
-                print "   [" + str_num_row + "-" + str_num_column + "] section"
-                print "   -> MaxY is set to default value"
+                print ("ERROR : an error occured on MaxY in")
+                print (
+                    "   [" + str_num_row + "-" + str_num_column + "] section")
+                print ("   -> MaxY is set to default value")
                 print
                 max_y = DEFAULT_MAX
 
@@ -253,9 +253,10 @@ class Parameters(object):
             except (KeyError, IndexError):
                 grid_x = False
             except (ValueError, TypeError):
-                print "ERROR : an error occured on GridX in"
-                print "   [" + str_num_row + "-" + str_num_column + "] section"
-                print "   -> GridX is set to False"
+                print ("ERROR : an error occured on GridX in")
+                print (
+                    "   [" + str_num_row + "-" + str_num_column + "] section")
+                print ("   -> GridX is set to False")
                 print
                 grid_x = False
 
@@ -265,9 +266,10 @@ class Parameters(object):
             except (KeyError, IndexError):
                 grid_y = False
             except (ValueError, TypeError):
-                print "ERROR : an error occured on GridY in"
-                print "   [" + str_num_row + "-" + str_num_column + "] section"
-                print "   -> GridY is set to False"
+                print ("ERROR : an error occured on GridY in")
+                print (
+                    "   [" + str_num_row + "-" + str_num_column + "] section")
+                print ("   -> GridY is set to False")
                 print
                 grid_y = False
 
@@ -280,9 +282,10 @@ class Parameters(object):
             except (KeyError, IndexError):
                 link = None
             except (ValueError, TypeError):
-                print "ERROR : an error occured on LinkX in"
-                print "   [" + str_num_row + "-" + str_num_column + "] section"
-                print "   -> LinkX is set to None"
+                print ("ERROR : an error occured on LinkX in")
+                print (
+                    "   [" + str_num_row + "-" + str_num_column + "] section")
+                print ("   -> LinkX is set to None")
                 print
                 link = None
 
@@ -329,28 +332,29 @@ class Parameters(object):
                     self.curves[name] = curve
 
                 except (ValueError, TypeError, KeyError):
-                    print "There is a no valid value on [Curves] section"
-                    print "Please, respect the following format :"
+                    print ("There is a no valid value on [Curves] section")
+                    print ("Please, respect the following format :")
                     print
-                    print "[CurveName]: [Row] [Column] [Legend] [Color] [Width]"
+                    print (
+                        "[CurveName]: [Row] [Column] [Legend] [Color] [Width]")
                     print
-                    print "where:"
-                    print "- [CurveName] is a string"
-                    print "- [Row] is an integer"
-                    print "- [Column] is an integer"
-                    print "- [Legend] is a string"
-                    print "- [Color] must be :"
-                    print "          r or red"
-                    print "          g or green"
-                    print "          b or blue"
-                    print "          c or cyan"
-                    print "          m or magenta"
-                    print "          y or yellow"
-                    print "          k or black"
-                    print "          w or white"
-                    print "          (R, G, B, [A]) tuple of integers 0-255"
-                    print "          hexadecimal strings; may begin with #"
-                    print "- [Width] is an integer"
+                    print ("where:")
+                    print ("- [CurveName] is a string")
+                    print ("- [Row] is an integer")
+                    print ("- [Column] is an integer")
+                    print ("- [Legend] is a string")
+                    print ("- [Color] must be :")
+                    print ("          r or red")
+                    print ("          g or green")
+                    print ("          b or blue")
+                    print ("          c or cyan")
+                    print ("          m or magenta")
+                    print ("          y or yellow")
+                    print ("          k or black")
+                    print ("          w or white")
+                    print ("          (R, G, B, [A]) tuple of integers 0-255")
+                    print ("          hexadecimal strings; may begin with #")
+                    print ("- [Width] is an integer")
                     exit()
 
             else:
