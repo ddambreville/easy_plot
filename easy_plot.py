@@ -573,28 +573,43 @@ def main():
                     print ("ERROR : '%s' not find in File '%s'\
                     " % (abscissa, data_file))
                     pg.exit()
-            data_x = float(row[abscissa])
 
-            for key, value in row.items():
-                if key != abscissa:
+            test_datax_flag = False
+            try:
+                data_x = float(row[abscissa])
+                test_datax_flag = True
+            except BaseException:
+                print ("WARNING: a data x value is not a number")
+                # pg.exit()
+
+            if test_datax_flag is True:
+                for key, value in row.items():
+                    test_datay_flag = False
+                    # if key != abscissa:
                     if value is not None:
                         try:
                             data_y = float(value)
+                            test_datay_flag = True
                         except (TypeError, ValueError):
-                            print ("ERROR: " + str(value) + " in " + str(key))
-                            print ("       is not a number")
+                            print ("WARNING: " + str(value) + " in " +
+                                   str(key) + " is not a number")
                             pg.exit()
                     else:
                         print (
-                            "WARNING: None Value in " + str(key) + " set to 0")
-                        data_y = 0
-                    cur_curve = csv_dic.setdefault(key, {})
-                    if data_x not in cur_curve:
+                            "WARNING: None Value in " + str(key))
+
+                    if test_datay_flag is True:
+                        cur_curve = csv_dic.setdefault(key, {})
                         cur_curve.update({data_x: data_y})
-                    else:
-                        print ("Error : Curve %s already has value for time %s"
-                               % (key, str(data_x)))
-                        exit()
+
+                        # if data_x not in cur_curve:
+                        #     cur_curve.update({data_x: data_y})
+                        # else:
+                        #     print (
+                        #         "Error : Curve " + key +
+                        #         " already has value for " + abscissa + " " +
+                        #         str(data_x))
+                        #     exit()
 
     if len(data_file_list) > 0:
         win.check_curves_in_csv(csv_dic.keys())
