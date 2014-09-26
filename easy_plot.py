@@ -437,12 +437,9 @@ class Window(object):
             if var_x not in curve.datas.keys():
                 curve.datas[var_x] = [var_y]
             else:
-                curve.datas[var_x] = [curve.datas[var_x][0], var_y]
-
-            # curve.datas[var_x] = var_y
+                curve.datas[var_x].append(var_y)
 
             if has_to_plot:
-                #curve.plot.setData(curve.datas.keys(), curve.datas.values())
                 self.curve_display(curve)
         else:
             self._print_error(curve_name)
@@ -615,12 +612,10 @@ def main():
                 test_datax_flag = True
             except BaseException:
                 print ("WARNING: a data x value is not a number")
-                # pg.exit()
 
             if test_datax_flag is True:
                 for key, value in row.items():
                     test_datay_flag = False
-                    # if key != abscissa:
                     if value is not None:
                         try:
                             data_y = float(value)
@@ -639,13 +634,9 @@ def main():
                         if data_x not in cur_curve:
                             cur_curve.update({data_x: [data_y]})
                         else:
-                            # print (
-                            #     "WARNING : Curve " + key +
-                            #     " already has value for " + abscissa + " " +
-                            #     str(data_x))
+                            cur_curve[data_x].append(data_y)
                             cur_curve.update(
-                                {data_x: [cur_curve[data_x][0], data_y]})
-                            # exit()
+                                {data_x: cur_curve[data_x]})
 
     if len(data_file_list) > 0:
         win.check_curves_in_csv(csv_dic.keys())
@@ -656,8 +647,8 @@ def main():
         datas_y = [csv_dic[curve][data_x] for data_x in datas_x]
 
         for data_x, data_y in zip(datas_x, datas_y):
-            for elmt in data_y:
-                win.add_point(curve, data_x, elmt, False)
+            for i in range(len(data_y)):
+                win.add_point(curve, data_x, data_y[i], False)
 
     for curve in win.curves:
         win.curve_display(curve)
