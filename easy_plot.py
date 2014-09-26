@@ -168,8 +168,17 @@ class Curve(object):
         self.legend = legend
         self.color = color
         self.plot = plot
-
+        self.number_of_points = 0
         self.datas = {}
+
+
+class Data(object):
+
+    """Class Data"""
+
+    def __init__(self, data_x, data_y):
+        self.data_x = data_x
+        self.data_y = data_y
 
 
 class Figure(object):
@@ -265,12 +274,15 @@ class Figure(object):
             else:
                 time = self.max_time
 
-            if (len(self.curves_list[0].datas.keys()) > 0 and
-                max(self.curves_list[0].datas.keys()) >= time):
+            if (len(self.curves_list[0].datas.keys()) > 0):
 
-                self.plot_widget.setXRange(
-                    max(self.curves_list[0].datas.keys()) - time,
-                    max(self.curves_list[0].datas.keys()))
+                last_data = max(self.curves_list[0].datas.keys())
+
+                if(self.curves_list[0].datas[last_data].data_x >= time):
+
+                    self.plot_widget.setXRange(
+                        self.curves_list[0].datas[last_data].data_x - time,
+                        self.curves_list[0].datas[last_data].data_x)
             else:
                 self.plot_widget.setXRange(0, time)
         else:
@@ -429,21 +441,6 @@ class Window(object):
             print ("curve.")
             pg.exit()
 
-    def add_point(self, curve_name, var_x, var_y, has_to_plot=True):
-        """Public method : add points on curve"""
-        if curve_name in self.curves.keys():
-            curve = self.curves[curve_name]
-
-            if var_x not in curve.datas.keys():
-                curve.datas[var_x] = [var_y]
-            else:
-                curve.datas[var_x].append(var_y)
-
-            if has_to_plot:
-                self.curve_display(curve)
-        else:
-            self._print_error(curve_name)
-
     def curve_display(self, curve_name):
         """Public method : Display a curve"""
         if curve_name in self.curves.keys():
@@ -454,6 +451,16 @@ class Window(object):
             curve.plot.setData(datas_x, datas_y)
         else:
             self._print_error(curve_name)
+
+    def add_point(self, curve_name, var_x, var_y, has_to_plot=True):
+        """Public method : add points on curve"""
+        if curve_name in self.curves.keys():
+            curve = self.curves[curve_name]
+            curve.datas[curve.number_of_points] = Data(var_x, var_y)
+            curve.number_of_points += 1
+
+        if has_to_plot is True:
+            self.curve_display(curve_name)
 
     def check_curves_in_csv(self, csv_curve_list):
         """ check if curves from cfg are in csv """
@@ -469,40 +476,17 @@ class Window(object):
 
     def _dico_to_list(self, curve_name):
         """Private method : Put dictionnary in a list"""
-        curve = self.curves[curve_name]
+        datas_num = self.curves[curve_name].datas.keys()
+        datas_num.sort()
 
-        datas_x = curve.datas.keys()
-        datas_x.sort()
-        datas_y = [curve.datas[x] for x in datas_x]
+        datas_x = []
+        datas_y = []
 
-        cpt = 0
-        datas_y_cp = datas_y
-        for data_y in datas_y_cp:
-            multi_x = []
-            multi_y = []
-            for elemt in data_y:
-                multi_x.append(datas_x[cpt])
-                multi_y.append(elemt)
-            datas_x[cpt] = multi_x
-            datas_y[cpt] = multi_y
-            cpt += 1
+        for num in datas_num:
+            datas_x.append(self.curves[curve_name].datas[num].data_x)
+            datas_y.append(self.curves[curve_name].datas[num].data_y)
 
-        x_datas = []
-        for elemt in datas_x:
-            for i in range(len(elemt)):
-                x_datas.append(elemt[i])
-
-        y_datas = []
-        for elemt in datas_y:
-            for i in range(len(elemt)):
-                y_datas.append(elemt[i])
-
-        if len(x_datas) == len(y_datas):
-            return x_datas, y_datas
-        else:
-            print "ERROR: error occured during traitment"
-            print "   please, report this problem"
-            exit()
+        return datas_x, datas_y
 
     def run(self):
         """Public method : Run application"""
@@ -595,9 +579,11 @@ def main():
 
     # Plotting from CSV files
     csv_dic = {}
+    element_number = 0
     for data_file in data_file_list:
         dic_data = csv.DictReader(open(data_file))
 
+        element_number = 0
         for index, row in enumerate(dic_data):
             # Test if abscissa key exist in dic_data
             if not index:
@@ -629,26 +615,35 @@ def main():
                             "WARNING: None Value in " + str(key))
 
                     if test_datay_flag is True:
+                        data = Data(data_x, data_y)
                         cur_curve = csv_dic.setdefault(key, {})
+                        cur_curve.update({element_number: data})
+                        element_number += 1
 
-                        if data_x not in cur_curve:
-                            cur_curve.update({data_x: [data_y]})
-                        else:
-                            cur_curve[data_x].append(data_y)
-                            cur_curve.update(
-                                {data_x: cur_curve[data_x]})
+                        # if data_x not in cur_curve:
+                        #     cur_curve.update({data_x: [data_y]})
+                        # else:
+                        #     cur_curve[data_x].append(data_y)
+                        #     cur_curve.update(
+                        #         {data_x: cur_curve[data_x]})
 
     if len(data_file_list) > 0:
         win.check_curves_in_csv(csv_dic.keys())
 
     for curve in csv_dic.keys():
-        datas_x = csv_dic[curve].keys()
-        datas_x.sort()
-        datas_y = [csv_dic[curve][data_x] for data_x in datas_x]
+        datas_num = csv_dic[curve].keys()
+
+        datas_num.sort()
+
+        datas_x = []
+        datas_y = []
+
+        for num in datas_num:
+            datas_x.append(csv_dic[curve][num].data_x)
+            datas_y.append(csv_dic[curve][num].data_y)
 
         for data_x, data_y in zip(datas_x, datas_y):
-            for i in range(len(data_y)):
-                win.add_point(curve, data_x, data_y[i], False)
+            win.add_point(curve, data_x, data_y, False)
 
     for curve in win.curves:
         win.curve_display(curve)
