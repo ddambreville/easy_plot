@@ -29,6 +29,7 @@ DEFAULT_TIME = 10  # s
 PERIOD_CHECK_BUTTON = 250  # ms
 PERIOD_CHECK_ACTION = 20  # ms
 
+import numpy as np  # math et tableaux
 import argparse
 import os.path
 import csv
@@ -433,10 +434,16 @@ class Window(object):
         if curve_name in self.curves.keys():
             curve = self.curves[curve_name]
 
-            curve.datas[var_x] = var_y
+            if var_x not in curve.datas.keys():
+                curve.datas[var_x] = [var_y]
+            else:
+                curve.datas[var_x] = [curve.datas[var_x][0], var_y]
+
+            # curve.datas[var_x] = var_y
 
             if has_to_plot:
-                curve.plot.setData(curve.datas.keys(), curve.datas.values())
+                #curve.plot.setData(curve.datas.keys(), curve.datas.values())
+                self.curve_display(curve)
         else:
             self._print_error(curve_name)
 
@@ -444,6 +451,7 @@ class Window(object):
         """Public method : Display a curve"""
         if curve_name in self.curves.keys():
             curve = self.curves[curve_name]
+
             datas_x, datas_y = self._dico_to_list(curve_name)
 
             curve.plot.setData(datas_x, datas_y)
@@ -470,7 +478,34 @@ class Window(object):
         datas_x.sort()
         datas_y = [curve.datas[x] for x in datas_x]
 
-        return datas_x, datas_y
+        cpt = 0
+        datas_y_cp = datas_y
+        for data_y in datas_y_cp:
+            multi_x = []
+            multi_y = []
+            for elemt in data_y:
+                multi_x.append(datas_x[cpt])
+                multi_y.append(elemt)
+            datas_x[cpt] = multi_x
+            datas_y[cpt] = multi_y
+            cpt += 1
+
+        x_datas = []
+        for elemt in datas_x:
+            for i in range(len(elemt)):
+                x_datas.append(elemt[i])
+
+        y_datas = []
+        for elemt in datas_y:
+            for i in range(len(elemt)):
+                y_datas.append(elemt[i])
+
+        if len(x_datas) == len(y_datas):
+            return x_datas, y_datas
+        else:
+            print "ERROR: error occured during traitment"
+            print "   please, report this problem"
+            exit()
 
     def run(self):
         """Public method : Run application"""
@@ -600,16 +635,17 @@ def main():
 
                     if test_datay_flag is True:
                         cur_curve = csv_dic.setdefault(key, {})
-                        cur_curve.update({data_x: data_y})
 
-                        # if data_x not in cur_curve:
-                        #     cur_curve.update({data_x: data_y})
-                        # else:
-                        #     print (
-                        #         "Error : Curve " + key +
-                        #         " already has value for " + abscissa + " " +
-                        #         str(data_x))
-                        #     exit()
+                        if data_x not in cur_curve:
+                            cur_curve.update({data_x: [data_y]})
+                        else:
+                            # print (
+                            #     "WARNING : Curve " + key +
+                            #     " already has value for " + abscissa + " " +
+                            #     str(data_x))
+                            cur_curve.update(
+                                {data_x: [cur_curve[data_x][0], data_y]})
+                            # exit()
 
     if len(data_file_list) > 0:
         win.check_curves_in_csv(csv_dic.keys())
@@ -618,8 +654,10 @@ def main():
         datas_x = csv_dic[curve].keys()
         datas_x.sort()
         datas_y = [csv_dic[curve][data_x] for data_x in datas_x]
+
         for data_x, data_y in zip(datas_x, datas_y):
-            win.add_point(curve, data_x, data_y, False)
+            for elmt in data_y:
+                win.add_point(curve, data_x, elmt, False)
 
     for curve in win.curves:
         win.curve_display(curve)
