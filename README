@@ -18,4 +18,277 @@ Requires  : the following libraries must be install on your computer:
             - Numpy
             - SciPy
 
+            You can see following links to install those libraries:
+              http://www.pyqtgraph.org
+              http://pyqt.sourceforge.net/Docs/PyQt4/installation.html
+              http://www.scipy.org/scipylib/download.html
+
+Known issue :
+    - figures dimensions may be not equal
+
 Summary : This module permit to plot datas easilier from cvs file
+
+
+------------------------------------------------------------------------------
+Note: On linux only, you can add the easy_plot path to your bashrc file,
+      in order to call easy_plot from everywhere on you computer.
+
+*** How to do that: ***
+1) Go in your easy_plot repertory, enter pwd, then copy the answer.
+
+2) Open your bashrc :
+                     gedit /home/$USER/.bashrc
+
+3) Put the easy plot path at the end of your bashrc :
+                     PATH=$PATH:[answer of pwd]
+   Where [answer of pwd] is the answer of pwd command come to step 1)
+
+4) Save your bashrc
+
+==============================================================================
+
+                            HOW IT WORKS ?
+
+==============================================================================
+
+1) Configure the file describing what you want to plot.
+-------------------------------------------------------
+
+An example is provided in easy_plot.cfg
+
+The configuration file structure is following :
+
+[General]
+MaxTime         : [maximum time]
+Title           : [title]
+Abscissa        : [abscissa]
+LabelX          : [label on X axis]
+UnitX           : [unit of X axis]
+Anti-aliasing   : [anti aliasing]
+LinkXAll        : [link all x axis]
+
+[[row of figure]-[column of figure]]
+Title  : [title of figure]
+LabelY : [label on Y axis]
+UnitY  : [unit on Y axis]
+GridX  : [grid on X]
+GridY  : [grid on Y]
+MinY   : [minimum Value on Y]
+MaxY   : [maximum Value on X]
+Link   : [row figure to link location] [col figure to link location]
+
+[[row of figure]-[column of figure]]
+Title  : [title of figure]
+LabelY : [label on Y axis]
+UnitY  : [unit on Y axis]
+GridX  : [grid on X]
+GridY  : [grid on Y]
+MinY   : [minimum Value on Y]
+MaxY   : [maximum Value on Y]
+Link   : [row figure to link location] [col figure to link location]
+
+...
+
+[Curves]
+[CurveName] : [Row] [Column] [Legend] [Color] [Width]
+[CurveName] : [Row] [Column] [Legend] [Color] [Width]
+...
+
+where :
+- [maximum time] is the maximum time of each curve
+- [title] is the title of the window
+- [abscissa] define abscissa of curves. It must be the same as in
+        cvs file. If not specified, the default abscissa is Time
+- [label on X axis] is the label on the X axis. If not specified, the default
+        label is [abscissa]
+- [unit of X axis] is the unity of data on the X axis
+- [anti aliasing] is True if you want anti aliasing to be applied to the
+  window, False else
+- [link all x axis] is True if you want to link all x axis,
+  False else
+- [[row of figure]-[column of figure]] is the location of the figure on the
+  window. For example [1-1] is the first figure
+- [title of figure] is the title of the figure
+- [label on Y axis] is the label on the Y axis
+- [unit on Y axis] is the unity of data on the Y axis
+- [grid on X] is True if you want grid on X axis, False else
+- [grid on Y] is True if you want grid on Y axis, False else
+- [minimum Value on Y] is the minimum value of Y axis
+- [maximum Value on Y] is the maximum value of Y axis
+- [figure to link location] is the coordonate of figure to link
+- [CurveName] is the name of the curve. Must be the same as in cvs file.
+- [Row] is the row number of the curve. It corresponds on row of figure you
+  want to put the curve.
+- [Column] is the column number of the curve. It corresponds on columne of
+  figure you want to put the curve.
+- [Legend] is the legend of the curve
+- [Color] is the color of the curve. Must be : * r or red
+                                               * g or green
+                                               * b or blue
+                                               * c or cyan
+                                               * m or magenta
+                                               * y or yellow
+                                               * k or black
+                                               * w or white
+                                               * hexadecimal color strings;
+                                                 may begin with #
+- [Width] is the size of the curve. If not specified, the default width is 1
+
+______________________________________________________________________________
+
+2) Launch easy_plot.
+-----------------------
+
+The easy plotter can be use as a program or as an API.
+
+If you use it as a program:
+
+usage: python easy_plot.py [-h] [-c CONFIG_FILE] [-p] [-rx RES_X] [-ry RES_Y]
+                 [-i SERVER_IP] [-po PORT] [-r REFRESH_PERIOD] [-s] [-v]
+                 [DATAFILE [DATAFILE ...]
+(Note : On linux, you can replace python easy_plot.py by ./easy_plot.py)
+
+
+The following options are both for real time and static plotting:
+----------------------------------------------------------------
+[-h] (optional) display help and exit
+
+[-v] (optional) show program's version number and exit
+
+[-c CONFIGFILE] (optional) is to specify the path to the configuration file.
+        If not specified, the default configuration file is "easy_plot.cfg".
+
+[-rx RESOLUTION] (optional) define resolution in x of window.
+        If not specified, the default resolution is 1920.
+
+[-ry RESOLUTION] (optional) define resolution in y of window.
+        If not specified, the default resolution is 1080.
+
+[-p] (optional) permit to run a full printable version of easy plot.
+        You can print all window, and not just one figure.
+        (Note: buttons are not available with this option.)
+
+[-s] (optional) sort datas which are on abscissa.
+        (Note: automatic with several data files.)
+
+The following options are for real time plotting only:
+------------------------------------------------------
+[-i SERVER_IP] define server IP address for real time plotting.
+        If not specified, you can't use real time plotting, and you must
+        specify [DATAFILE].
+
+[-po PORT] (optional) define server port. If not specified, the default port
+        is 4521.
+
+[-r REFRESH_PERIOD]  (optional) define the refresh period. If not specified,
+        the default refresh period is 0.1 s.
+
+
+The following option is for static plotting only:
+-------------------------------------------------
+[DATAFILE] is to specify the path to the cvs data file, if -i option is not
+        specify. A example is provided in example.cvs
+
+
+==============================================================================
+
+                         HOW TO USE AS AN API ?
+
+==============================================================================
+
+-------------------------------------------------------------------------------
+Note: To plot in real time, you have to use Easy Plot has an API, to send your
+      datas on the network.
+      Nevertheless, only Server Side API (easy_plot_connection) is obligatory.
+      On your computer, you can run Easy Plot using the [-i] option.
+-------------------------------------------------------------------------------
+
+
+Server side:
+-------------
+  *** The server will send datas to plot in real time. ***
+  An example is given in example_rt_plot.py
+
+First of all, you have to import easy_plot_connection.
+
+1) Create the server that will send datas
+
+server = easy_plot_connection.Server([port], [local_plot], [max_points])
+
+[port] is the port used to send datas. By default, it is 4521.
+
+[local_plot] must be True if server and client is the same machine. False else
+By default, local_plot is False.
+
+[max_points] is the max number of datas that the server can store
+waiting to plot.
+By default, it is 100 000.
+
+2) Add points to send
+
+server.add_point([curve name], [x data], [y data])
+
+[curve name] is the name of the curve
+
+[x data], [y data] is the point to send
+
+3) Erase curve
+You can, if you want, erase you curve with the following command:
+
+server.curves_erase()
+
+
+
+On your computer:
+-----------------
+  *** You can plot from csv or from server describe before ***
+  As example, take a look of main function in easy_plot.py
+
+  First of all, you have to import easy_plot.
+
+1) Create the Window:
+
+win = easy_plot.Window([config_file], [res_x], [res_y], [printable])
+
+Where:
+[config_file] is to specify the path to the configuration file
+[res_x] define resolution in x of window.
+        If not specified, the default resolution is 1920.
+[res_y] efine resolution in y of window.
+        If not specified, the default resolution is 1080.
+[printable] is True to run a full printable version of easy plot, False else.
+        You can print all window, and not just one figure.
+
+2) Add points to plot
+
+win.add_point([curve], [data_x], [data_y])
+
+Where:
+[curve] is the curve which you want to add point
+[data_x] is the x data to add
+[data_y] is the y data to add
+
+3) Display the curve
+
+win.curve_display([curve])
+
+Where [curve] is the curve to display
+
+4) In case of real time plotting, create client thread to get datas
+
+import threading
+import easy_plot_connection
+
+thread = threading.Thread(target=easy_plot_connection.Client,
+                          args=(win, server_ip, port, refresh_period))
+thread.daemon = True
+thread.start()
+
+5) Run application
+
+win.run()
+
+******************************************************************************
+
+If you have detected any bug or if you need a special feature, please contact
+one of the authors.
