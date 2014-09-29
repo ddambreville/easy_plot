@@ -9,7 +9,16 @@ Contact   : rcarriere@aldebaran.com
             jletort@presta.aldebaran-robotics.fr
 Copyright : Aldebaran Robotics 2014
 
-Requires  : - pyqtgraph library must be install on your computer
+Requires  : the following libraries must be install on your computer:
+            - PyQtGraph
+            - PyQt4
+            - Numpy
+            - SciPy
+
+            You can see following links to install those libraries:
+              http://www.pyqtgraph.org
+              http://pyqt.sourceforge.net/Docs/PyQt4/installation.html
+              http://www.scipy.org/scipylib/download.html
 
 Known issue :
     - figures dimensions may be not equal

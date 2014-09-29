@@ -1,0 +1,21 @@
+Name      : Easy Plot
+Version   : beta 1.2
+Date      : 2014/09/16
+
+Author    : Renaud CARRIERE
+            Emmanuel NALEPA
+            Jason LETORT
+
+Contact   : rcarriere@aldebaran.com
+            enalepa@aldebaran.com
+            jletort@presta.aldebaran-robotics.fr
+
+Copyright : Aldebaran Robotics 2014
+
+Requires  : the following libraries must be install on your computer:
+            - PyQtGraph
+            - PyQt4
+            - Numpy
+            - SciPy
+
+Summary : This module permit to plot datas easilier from cvs file
