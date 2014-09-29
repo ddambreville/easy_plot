@@ -536,6 +536,11 @@ def main():
                         help="refresh period for real time plot\
                         (default: 0.1s)")
 
+    parser.add_argument("-s", "--sort", dest="sort",
+                        action="store_const",
+                        const=True, default=False,
+                        help="add option to sort X datas")
+
     parser.add_argument("-v", "--version", action="version",
                         version="%(prog)s " + VERSION)
 
@@ -549,6 +554,11 @@ def main():
     port = args.port
     refresh_period = args.refresh_period
     printable = args.printable
+    sort = args.sort
+
+    if len(data_file_list) > 1:
+        print "X datas will be sorted"
+        sort = True
 
     if server_ip and data_file_list:
         print ("Please chose plotting datas from a file OR from a server.")
@@ -631,16 +641,30 @@ def main():
         win.check_curves_in_csv(csv_dic.keys())
 
     for curve in csv_dic.keys():
-        datas_num = csv_dic[curve].keys()
-
-        datas_num.sort()
 
         datas_x = []
         datas_y = []
 
-        for num in datas_num:
-            datas_x.append(csv_dic[curve][num].data_x)
-            datas_y.append(csv_dic[curve][num].data_y)
+        datas_num = csv_dic[curve].keys()
+
+        if sort is True:
+            datas_dic = {}
+            for num in datas_num:
+                datas_dic[csv_dic[curve][num].data_x] = csv_dic[
+                    curve][num].data_y
+
+            datas_x = datas_dic.keys()
+            datas_x.sort()
+
+            for x_value in datas_x:
+                datas_y.append(datas_dic[x_value])
+
+        else:
+            datas_num.sort()
+
+            for num in datas_num:
+                datas_x.append(csv_dic[curve][num].data_x)
+                datas_y.append(csv_dic[curve][num].data_y)
 
         for data_x, data_y in zip(datas_x, datas_y):
             win.add_point(curve, data_x, data_y, False)
