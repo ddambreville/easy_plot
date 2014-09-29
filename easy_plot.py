@@ -15,7 +15,7 @@ Copyright: Aldebaran Robotics 2014
 @pep8 : Complains without rules R0902, R0912, R0913, R0914, R0915 and W0212
 """
 
-VERSION = "beta 1.1"
+VERSION = "beta 1.2"
 
 DEFAULT_CONFIG_FILE = "easy_plot.cfg"
 DEFAULT_ABSCISSA = "Time"
@@ -539,7 +539,8 @@ def main():
     parser.add_argument("-s", "--sort", dest="sort",
                         action="store_const",
                         const=True, default=False,
-                        help="add option to sort X datas")
+                        help="sort datas on abscissa\
+                        (automatic with several data files)")
 
     parser.add_argument("-v", "--version", action="version",
                         version="%(prog)s " + VERSION)

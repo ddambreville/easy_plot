@@ -1,5 +1,5 @@
 Name      : easy_plot.py
-Version   : beta 1.0
+Version   : beta 1.2
 Date      : 2014/09/16
 Author    : Renaud CARRIERE
             Emmanuel NALEPA
@@ -42,7 +42,7 @@ Note: On linux only, you can add the easy_plot path to your bashrc file,
 1) Configure the file describing what you want to plot.
 -------------------------------------------------------
 
-A example is provided in easy_plot.cfg
+An example is provided in easy_plot.cfg
 
 The configuration file structure is following :
 
@@ -131,16 +131,17 @@ The easy plotter can be use as a program or as an API.
 
 If you use it as a program:
 
-usage: python easy_plot.py [-h] [-c CONFIG_FILE] [-rx RES_X] [-ry RES_Y]
-                    [-i SERVER_IP] [-po PORT] [-r REFRESH_PERIOD]
-                    [DATAFILE [DATAFILE ...]]
-
+usage: python easy_plot.py [-h] [-c CONFIG_FILE] [-p] [-rx RES_X] [-ry RES_Y]
+                 [-i SERVER_IP] [-po PORT] [-r REFRESH_PERIOD] [-s] [-v]
+                 [DATAFILE [DATAFILE ...]
 (Note : On linux, you can replace python easy_plot.py by ./easy_plot.py)
 
 
 The following options are both for real time and static plotting:
 ----------------------------------------------------------------
-[-h] (optional) display help
+[-h] (optional) display help and exit
+
+[-v] (optional) show program's version number and exit
 
 [-c CONFIGFILE] (optional) is to specify the path to the configuration file.
         If not specified, the default configuration file is "easy_plot.cfg".
@@ -154,6 +155,9 @@ The following options are both for real time and static plotting:
 [-p] (optional) permit to run a full printable version of easy plot.
         You can print all window, and not just one figure.
         (Note: buttons are not available with this option.)
+
+[-s] (optional) sort datas which are on abscissa.
+        (Note: automatic with several data files.)
 
 The following options are for real time plotting only:
 ------------------------------------------------------
@@ -179,6 +183,14 @@ The following option is for static plotting only:
                          HOW TO USE AS AN API ?
 
 ==============================================================================
+
+-------------------------------------------------------------------------------
+Note: To plot in real time, you have to use Easy Plot has an API, to send your
+      datas on the network.
+      Nevertheless, only Server Side API (easy_plot_connection) is obligatory.
+      On your computer, you can run Easy Plot using the [-i] option.
+-------------------------------------------------------------------------------
+
 
 Server side:
 -------------
