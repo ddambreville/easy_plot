@@ -557,9 +557,22 @@ def main():
     printable = args.printable
     sort = args.sort
 
-    if len(data_file_list) > 1:
-        print "X datas will be sorted"
-        sort = True
+    if len(data_file_list) > 1 and sort is False:
+        yes = set(['YES', 'Y', 'yes', 'y', 'ye', ''])
+        no_ = set(['NO', 'N', 'no', 'n'])
+        continu = True
+        while continu:
+            print ("You have parsed several data files.")
+            print ("Do you want to sort datas on abscissa? (Yes/no)")
+            choice = raw_input().lower()
+            if choice in yes:
+                sort = True
+                continu = False
+                print ("Abscissa's datas will be sorted by ascending order")
+            elif choice in no_:
+                continu = False
+            else:
+                sys.stdout.write("Please respond with 'yes' or 'no'")
 
     if server_ip and data_file_list:
         print ("Please chose plotting datas from a file OR from a server.")
@@ -630,13 +643,6 @@ def main():
                         cur_curve = csv_dic.setdefault(key, {})
                         cur_curve.update({element_number: data})
                         element_number += 1
-
-                        # if data_x not in cur_curve:
-                        #     cur_curve.update({data_x: [data_y]})
-                        # else:
-                        #     cur_curve[data_x].append(data_y)
-                        #     cur_curve.update(
-                        #         {data_x: cur_curve[data_x]})
 
     if len(data_file_list) > 0:
         win.check_curves_in_csv(csv_dic.keys())

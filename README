@@ -28,8 +28,8 @@ Known issue :
 
 Summary : This module permit to plot datas easilier from cvs file
 
-
 ------------------------------------------------------------------------------
+
 Note: On linux only, you can add the easy_plot path to your bashrc file,
       in order to call easy_plot from everywhere on you computer.
 
