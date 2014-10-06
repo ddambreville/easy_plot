@@ -1,5 +1,5 @@
 Name      : Easy Plot
-Version   : beta 1.2
+Version   : beta 1.0
 Date      : 2014/09/29
 
 Author    : Renaud CARRIERE
@@ -186,8 +186,10 @@ The following options are for real time plotting only:
 
 The following option is for static plotting only:
 -------------------------------------------------
-[DATAFILE] is to specify the path to the cvs data file, if -i option is not
+[DATAFILE] is to specify the path to the cvs data file(s) if -i option is not
         specify. A example is provided in example.cvs
+
+        (Note: you can just put '*.csv' to take all csv files in the folder)
 
 
 ==============================================================================
