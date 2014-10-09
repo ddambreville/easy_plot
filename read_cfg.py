@@ -31,6 +31,9 @@ CURVES_SECTION = "Curves"
 DEFAULT_MIN = None
 DEFAULT_MAX = None
 
+MAX_COLOR_VALUE = 255
+MIN_COLOR_VALUE = 75
+
 
 class Curve(object):
 
@@ -322,14 +325,15 @@ class Parameters(object):
                     if color == 'random':
                         import random
 
-                        red = random.randint(0, 255)
-                        blue = random.randint(0, 255)
-                        green = random.randint(0, 255)
 
-                        while ((red + blue + green)/3) >= 170:
-                            red = random.randint(0, 255)
-                            blue = random.randint(0, 255)
-                            green = random.randint(0, 255)
+                        red = random.randint(0, MAX_COLOR_VALUE)
+                        blue = random.randint(0, MAX_COLOR_VALUE)
+                        green = random.randint(0, MAX_COLOR_VALUE)
+
+                        while ((red + blue + green)/3) <= MIN_COLOR_VALUE:
+                            red = random.randint(0, MAX_COLOR_VALUE)
+                            blue = random.randint(0, MAX_COLOR_VALUE)
+                            green = random.randint(0, MAX_COLOR_VALUE)
 
                         color = (red, green, blue)
 
