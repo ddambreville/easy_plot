@@ -319,7 +319,21 @@ class Parameters(object):
                     else:
                         width = 1
 
-                    if len(color) > 1 and color[0] is not '#':
+                    if color == 'random':
+                        import random
+
+                        red = random.randint(0, 255)
+                        blue = random.randint(0, 255)
+                        green = random.randint(0, 255)
+
+                        while ((red + blue + green)/3) >= 170:
+                            red = random.randint(0, 255)
+                            blue = random.randint(0, 255)
+                            green = random.randint(0, 255)
+
+                        color = (red, green, blue)
+
+                    elif len(color) > 1 and color[0] is not '#':
                         color = dic_color[color]
 
                     # to test if color has a correct format
