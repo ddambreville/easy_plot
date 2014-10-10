@@ -34,7 +34,7 @@ DEFAULT_MAX = None
 MAX_COLOR_VALUE = 255
 MIN_COLOR_VALUE = 75
 
-DIFF_ = 90
+DIFF_ = 120
 LIMIT_COLOR_ITERATION = 10000
 
 def random_color(mini, maxi, minimum_luminosity, last_color_list = None):
@@ -52,12 +52,9 @@ def random_color(mini, maxi, minimum_luminosity, last_color_list = None):
         if ((red + blue + green)/3) >= minimum_luminosity:
             if last_color_list is not None and len(last_color_list) > 0:
                 for color in last_color_list:
-                    bool_list.append((color['red']-DIFF_ <= red and\
-                                                  red <= color['red']+DIFF_)\
-                      and (color['green']-DIFF_ <= green and\
-                                              green <= color['green']+DIFF_)\
-                      and (color['blue']-DIFF_ <= blue and\
-                                                blue <= color['blue']+DIFF_))
+                    bool_list.append(abs(color['red'] - red) < DIFF_\
+                              and abs(color['green'] - green) < DIFF_\
+                              and abs(color['blue'] - blue) < DIFF_)
                 if True not in bool_list:
                     continu = False
             else:
