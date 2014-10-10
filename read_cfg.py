@@ -31,15 +31,20 @@ CURVES_SECTION = "Curves"
 DEFAULT_MIN = None
 DEFAULT_MAX = None
 
-MAX_COLOR_VALUE = 250
+MAX_COLOR_VALUE = 255
 MIN_COLOR_VALUE = 75
+
+DIFF_ = 90
+LIMIT_COLOR_ITERATION = 10000
 
 def random_color(mini, maxi, minimum_luminosity, last_color_list = None):
 
     """return rgb value for random color"""
     continu = True
+    cpt = 0
 
-    while continu:
+    while continu and cpt <= LIMIT_COLOR_ITERATION:
+        bool_list = []
         red = random.randint(mini, maxi)
         blue = random.randint(mini, maxi)
         green = random.randint(mini, maxi)
@@ -47,16 +52,18 @@ def random_color(mini, maxi, minimum_luminosity, last_color_list = None):
         if ((red + blue + green)/3) >= minimum_luminosity:
             if last_color_list is not None and len(last_color_list) > 0:
                 for color in last_color_list:
-                    if (color['red']-25 <= red and red <= color['red']+25)\
-                      and (color['green']-25 <= green and\
-                                              green <= color['green']+25)\
-                      and (color['blue']-25 <= blue and\
-                                                blue <= color['blue']+25):
-                        pass
-                    else:
-                        continu = False
+                    bool_list.append((color['red']-DIFF_ <= red and\
+                                                  red <= color['red']+DIFF_)\
+                      and (color['green']-DIFF_ <= green and\
+                                              green <= color['green']+DIFF_)\
+                      and (color['blue']-DIFF_ <= blue and\
+                                                blue <= color['blue']+DIFF_))
+                if True not in bool_list:
+                    continu = False
             else:
                 continu = False
+
+        cpt += 1
 
     dic_color = {'red':red, 'green':green, 'blue':blue}
     return dic_color
