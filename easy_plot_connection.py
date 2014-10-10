@@ -252,6 +252,14 @@ class Server(object):
             self.curves[curve_name].append((data_x, data_y))
             self.curves_limitation()
 
+    def add_list_point(self, time_elapsed, list_tuple_data):
+        """
+        Public method: multi add_point use.
+        list_tuple_data = list of (headerName, data)
+        """
+        [self.add_point(x[0], time_elapsed, x[1]) for x in list_tuple_data]
+
+
     def curves_erase(self):
         """Erase all curves"""
         self.has_to_erase_curves = True
