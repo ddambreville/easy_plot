@@ -132,6 +132,7 @@ where :
                                                * w or white
                                                * hexadecimal color strings;
                                                  may begin with #
+                                               * random
 - [Width] is the size of the curve. If not specified, the default width is 1
 
 ______________________________________________________________________________
