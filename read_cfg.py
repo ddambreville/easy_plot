@@ -14,7 +14,7 @@ Contact: rcarriere@aldebaran.com
 Copyright: Aldebaran Robotics 2014
 @pep8 : Complains without rules R0902, R0912, R0913, R0914, R0915 and W0212
 """
-
+import random
 import pyqtgraph as pg
 
 try:
@@ -31,8 +31,35 @@ CURVES_SECTION = "Curves"
 DEFAULT_MIN = None
 DEFAULT_MAX = None
 
-MAX_COLOR_VALUE = 255
+MAX_COLOR_VALUE = 250
 MIN_COLOR_VALUE = 75
+
+def random_color(mini, maxi, minimum_luminosity, last_color_list = None):
+
+    """return rgb value for random color"""
+    continu = True
+
+    while continu:
+        red = random.randint(mini, maxi)
+        blue = random.randint(mini, maxi)
+        green = random.randint(mini, maxi)
+
+        if ((red + blue + green)/3) >= minimum_luminosity:
+            if last_color_list is not None and len(last_color_list) > 0:
+                for color in last_color_list:
+                    if (color['red']-25 <= red and red <= color['red']+25)\
+                      and (color['green']-25 <= green and\
+                                              green <= color['green']+25)\
+                      and (color['blue']-25 <= blue and\
+                                                blue <= color['blue']+25):
+                        pass
+                    else:
+                        continu = False
+            else:
+                continu = False
+
+    dic_color = {'red':red, 'green':green, 'blue':blue}
+    return dic_color
 
 
 class Curve(object):
@@ -296,6 +323,7 @@ class Parameters(object):
 
             dic_curves = conf_dic[CURVES_SECTION]
 
+        save_random_color=[]
         for name, parameters in dic_curves.items():
             nb_parameter = len(parameters)
             if nb_parameter >= 4:
@@ -323,19 +351,15 @@ class Parameters(object):
                         width = 1
 
                     if color == 'random':
-                        import random
 
+                        color = random_color(
+                        0, MAX_COLOR_VALUE, MIN_COLOR_VALUE,save_random_color)
 
-                        red = random.randint(0, MAX_COLOR_VALUE)
-                        blue = random.randint(0, MAX_COLOR_VALUE)
-                        green = random.randint(0, MAX_COLOR_VALUE)
+                        save_random_color.append(color)
 
-                        while ((red + blue + green)/3) <= MIN_COLOR_VALUE:
-                            red = random.randint(0, MAX_COLOR_VALUE)
-                            blue = random.randint(0, MAX_COLOR_VALUE)
-                            green = random.randint(0, MAX_COLOR_VALUE)
-
-                        color = (red, green, blue)
+                        color = (color['red'],
+                                 color['green'],
+                                 color['blue'])
 
                     elif len(color) > 1 and color[0] is not '#':
                         color = dic_color[color]

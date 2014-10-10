@@ -15,7 +15,7 @@ Copyright: Aldebaran Robotics 2014
 @pep8 : Complains without rules R0902, R0912, R0913, R0914, R0915 and W0212
 """
 
-VERSION = "beta 1.1"
+VERSION = "beta 1.2"
 
 DEFAULT_CONFIG_FILE = "easy_plot.cfg"
 DEFAULT_ABSCISSA = "Time"
