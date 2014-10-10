@@ -327,7 +327,7 @@ class Parameters(object):
 
             dic_curves = conf_dic[CURVES_SECTION]
 
-        save_random_color=[]
+        save_random_color = {}
         for name, parameters in dic_curves.items():
             nb_parameter = len(parameters)
             if nb_parameter >= 4:
@@ -356,10 +356,16 @@ class Parameters(object):
 
                     if color == 'random':
 
-                        color = random_color(
-                        0, MAX_COLOR_VALUE, MIN_COLOR_VALUE,save_random_color)
+                        key = str_row+'-'+str_column
 
-                        save_random_color.append(color)
+                        if key not in save_random_color.keys():
+                            save_random_color[key] = []
+
+                        color = random_color(0, MAX_COLOR_VALUE,
+                                            MIN_COLOR_VALUE,
+                                            save_random_color[key])
+
+                        save_random_color[key].append(color)
 
                         color = (color['red'],
                                  color['green'],
