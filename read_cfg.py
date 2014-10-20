@@ -18,11 +18,11 @@ import random
 import pyqtgraph as pg
 
 try:
-    import tools
+    import ep_tools
 except ImportError:
     print ("Well that's embarrassing !")
-    print ("I can't find tools on your computer.")
-    print ("Please put tools.py on easy_plot folder")
+    print ("I can't find ep_tools on your computer.")
+    print ("Please put ep_tools.py on easy_plot folder")
     exit()
 
 
@@ -102,7 +102,7 @@ class Parameters(object):
         self.curves = {}
 
         try:
-            conf_dic = tools.read_config_file(config_file_path)
+            conf_dic = ep_tools.read_config_file(config_file_path)
         except BaseException:
             print ("Oops ! An error occured during configuration file reading")
             print ("Please, check configuration file's syntaxe")
